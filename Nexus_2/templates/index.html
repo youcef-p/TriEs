@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Hub | Enterprise Operations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-deep: #05070f; --bg-surface: #0b101e; --glass: rgba(20, 28, 45, 0.6); --glass-border: rgba(255, 255, 255, 0.08); --text-main: #e2e8f0; --text-muted: #94a3b8; --accent-primary: #00e5ff; --accent-secondary: #7000ff; --accent-success: #10b981; --accent-warning: #f59e0b; --accent-danger: #ef4444; --sidebar-width: 260px; --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Inter', sans-serif; background-color: var(--bg-deep); color: var(--text-main); overflow-x: hidden; min-height: 100vh; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; z-index: -1; animation: gridMove 20s linear infinite; }
+        @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
+        .app-shell { display: flex; min-height: 100vh; } .sidebar { width: var(--sidebar-width); background: var(--glass); backdrop-filter: blur(16px); border-right: 1px solid var(--glass-border); padding: 2rem 1.5rem; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; } .nav-item { padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.3s var(--transition-smooth); display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-weight: 500; position: relative; overflow: hidden; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-main); } .nav-item.active { background: rgba(0, 229, 255, 0.1); color: var(--accent-primary); box-shadow: inset 3px 0 0 var(--accent-primary); } .nav-item i { width: 20px; text-align: center; }
+        .system-status { padding: 1rem; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; font-size: 0.85rem; } .status-dot { width: 8px; height: 8px; background: var(--accent-success); border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 10px var(--accent-success); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .main-content { flex: 1; margin-left: var(--sidebar-width); padding: 2rem 3rem; position: relative; } .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .search-bar { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 30px; padding: 0.6rem 1.2rem; width: 300px; display: flex; align-items: center; gap: 10px; color: var(--text-muted); transition: all 0.3s ease; }
+        .search-bar:focus-within { border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(0, 229, 255, 0.15); } .search-bar input { background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; font-family: inherit; }
+        .user-profile { display: flex; align-items: center; gap: 15px; } .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); display: flex; align-items: center; justify-content: center; font-weight: 600; cursor: pointer; }
+        .view { display: none; animation: fadeIn 0.5s var(--transition-smooth) forwards; } .view.active { display: block; } @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .page-title { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; margin-bottom: 0.5rem; } .page-subtitle { color: var(--text-muted); margin-bottom: 2.5rem; }
+        .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; } .app-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; position: relative; overflow: hidden; cursor: pointer; transition: all 0.4s var(--transition-smooth); display: flex; flex-direction: column; gap: 1rem; }
+        .app-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 16px; padding: 1px; background: linear-gradient(135deg, transparent, transparent); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; transition: background 0.4s ease; pointer-events: none; }
+        .app-card:hover { transform: translateY(-5px); background: rgba(20, 28, 45, 0.8); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); } .app-card:hover::before { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); }
+        .app-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent-primary); background: rgba(0, 229, 255, 0.1); }
+        .app-card:nth-child(2) .app-icon { color: var(--accent-warning); background: rgba(245, 158, 11, 0.1); } .app-card:nth-child(3) .app-icon { color: #f43f5e; background: rgba(244, 63, 94, 0.1); } .app-card:nth-child(4) .app-icon { color: #8b5cf6; background: rgba(139, 92, 246, 0.1); } .app-card:nth-child(5) .app-icon { color: var(--accent-success); background: rgba(16, 185, 129, 0.1); }
+        .app-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 600; } .app-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; flex: 1; }
+        .app-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--glass-border); font-size: 0.8rem; color: var(--text-muted); } .launch-btn { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; }
+        .app-card:hover .launch-btn { background: var(--accent-primary); color: var(--bg-deep); } .workspace-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .back-btn { background: rgba(255,255,255,0.05); border: none; color: var(--text-main); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; } .back-btn:hover { background: rgba(255,255,255,0.1); }
+        .control-panel { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; }
+        .control-panel input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.8rem 1rem; color: var(--text-main); font-family: monospace; outline: none; transition: 0.3s; }
+        .control-panel input:focus { border-color: var(--accent-primary); box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); } .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); }
+        .tab-btn { background: none; border: none; color: var(--text-muted); padding: 0.8rem 1.5rem; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent; transition: 0.3s; } .tab-btn.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; } .tab-content.active { display: block; } .toggle-group { display: flex; gap: 1.5rem; margin: 1.5rem 0; } .toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; }
+        .toggle-input { appearance: none; width: 18px; height: 18px; border: 1px solid var(--glass-border); border-radius: 4px; cursor: pointer; position: relative; } .toggle-input:checked { background: var(--accent-primary); border-color: var(--accent-primary); }
+        .toggle-input:checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--bg-deep); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; }
+        .terminal-output { background: #020617; border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; font-size: 0.9rem; color: #10b981; min-height: 300px; max-height: 500px; overflow-y: auto; white-space: pre-wrap; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); display: none; margin-top: 1.5rem; }
+        .terminal-output.active { display: block; } .icon-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main); width: 42px; height: 42px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+        .icon-btn:hover:not(:disabled) { background: var(--accent-primary); color: var(--bg-deep); border-color: var(--accent-primary); } .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.2s ease; }
+        .modal-overlay.active { display: flex; } .modal-content { background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 16px; width: 600px; max-width: 90vw; height: 500px; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .modal-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; } .modal-header h3 { font-family: 'Space Grotesk'; font-size: 1.2rem; color: var(--accent-primary); }
+        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; } .modal-breadcrumb { padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--glass-border); }
+        .modal-breadcrumb .icon-btn { width: 32px; height: 32px; } .path-text { font-family: monospace; color: var(--text-muted); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .folder-grid { flex: 1; overflow-y: auto; padding: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; } .folder-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: center; border: 1px solid transparent; }
+        .folder-item:hover { background: rgba(0, 229, 255, 0.05); border-color: var(--glass-border); } .folder-item i { font-size: 2rem; color: var(--accent-warning); } .folder-item.drive i { color: var(--accent-primary); } .folder-item span { font-size: 0.85rem; color: var(--text-main); word-break: break-all; }
+        .picker-loading, .picker-error, .empty-picker { grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted); } .picker-error { color: #f43f5e; } .modal-footer { padding: 1.2rem 1.5rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 1rem; }
+        .btn-secondary { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 500; } .btn-primary { background: var(--accent-primary); border: 1px solid var(--accent-primary); color: var(--bg-deep); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-primary:disabled { background: var(--text-muted); border-color: var(--text-muted); cursor: not-allowed; }
+        .drop-zone { border: 2px dashed var(--glass-border); border-radius: 16px; padding: 4rem 2rem; text-align: center; transition: 0.3s; background: rgba(255,255,255,0.01); cursor: pointer; position: relative; overflow: hidden; }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent-primary); background: rgba(0, 229, 255, 0.05); transform: translateY(-2px); } .drop-zone i { font-size: 3rem; color: var(--accent-primary); margin-bottom: 1.5rem; display: block; transition: 0.3s; }
+        .drop-zone.dragover i { transform: scale(1.2); } .drop-zone h3 { font-family: 'Space Grotesk'; margin-bottom: 0.5rem; } .compression-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 2rem; display: none; }
+        .compression-stats.active { display: grid; animation: fadeIn 0.5s ease; } .stat-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .stat-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; } .stat-value { font-family: 'Space Grotesk'; font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
+        .stat-value.success { color: var(--accent-success); text-shadow: 0 0 10px rgba(16, 185, 129, 0.3); } .md-preview-container { background: #020617; border: 1px solid var(--glass-border); border-radius: 12px; margin-top: 1.5rem; display: none; flex-direction: column; overflow: hidden; }
+        .md-preview-container.active { display: flex; animation: fadeIn 0.5s ease; } .md-header { padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .md-preview { padding: 1.5rem; font-family: monospace; font-size: 0.9rem; color: #e2e8f0; height: 400px; overflow-y: auto; white-space: pre-wrap; }
+        .miner-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; height: calc(100vh - 200px); } .miner-config { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; overflow-y: auto; }
+        .miner-console { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
+        .console-header { padding: 1rem 1.5rem; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; font-family: 'Space Grotesk'; font-weight: 600; }
+
+        /* ==========================================
+           SHARED FULLSCREEN MODE (Modules 4 & 5)
+           ========================================== */
+        .app-fullscreen {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width); /* Respects sidebar lateral width */
+            width: calc(100% - var(--sidebar-width));
+            height: 100vh; /* Full vertical height */
+            z-index: 50;
+            background: var(--bg-deep);
+            border: none;
+        }
+
+        .floating-back-btn {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            z-index: 100;
+            background: rgba(11, 16, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        .floating-back-btn:hover {
+            background: var(--accent-primary);
+            color: var(--bg-deep);
+            border-color: var(--accent-primary);
+            transform: scale(1.05);
+        }
+        
+        /* Show floating button for both Module 4 and Module 5 */
+        #ws-4.active .floating-back-btn,
+        #ws-5.active .floating-back-btn {
+            display: flex;
+        }
+    </style>
+    <style>
+        /* Nexus field instrument theme — bone paper, petroleum ink, amber signal */
+        :root {
+            --bg-deep: #eef1eb;
+            --bg-surface: #f7f8f4;
+            --glass: rgba(247, 248, 244, .88);
+            --glass-border: #d2d9d1;
+            --text-main: #122633;
+            --text-muted: #62727a;
+            --accent-primary: #d9773d;
+            --accent-secondary: #286b70;
+            --accent-success: #3d7a61;
+            --accent-warning: #c79538;
+            --accent-danger: #b94b45;
+            --sidebar-width: 278px;
+            --ink-soft: #dfe6df;
+            --shadow-sm: 0 2px 8px rgba(25, 45, 48, .06);
+            --shadow-md: 0 18px 45px rgba(25, 45, 48, .11);
+            --mono: 'IBM Plex Mono', 'Space Mono', monospace;
+        }
+        html { background: var(--bg-deep); }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background:
+                radial-gradient(circle at 90% 0%, rgba(40,107,112,.10), transparent 28rem),
+                linear-gradient(120deg, rgba(217,119,61,.035), transparent 46%);
+            color: var(--text-main);
+        }
+        body::before { opacity: .34; background-image: linear-gradient(rgba(40,107,112,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(40,107,112,.045) 1px, transparent 1px); background-size: 48px 48px; }
+        body::after { content:""; position:fixed; inset:0; pointer-events:none; opacity:.22; z-index:20; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E"); mix-blend-mode:multiply; }
+        .app-shell { min-height:100dvh; }
+        .sidebar {
+            background: #17343d;
+            border-right: 0;
+            padding: 28px 20px 22px;
+            box-shadow: 12px 0 34px rgba(18,38,51,.10);
+            color: #edf2eb;
+        }
+        .sidebar::after { content:""; position:absolute; right:0; top:0; bottom:0; width:4px; background:var(--accent-primary); opacity:.9; }
+        .logo {
+            color:#f4f2e9; background:none; -webkit-text-fill-color:initial;
+            font-size:1.28rem; letter-spacing:.12em; margin-bottom:42px; gap:12px;
+        }
+        .logo i { color:#e5a05e; font-size:1.05rem; }
+        .nav-menu { gap:6px; }
+        .nav-item {
+            border-radius:7px; padding:13px 14px; color:#adc0bd; font-size:.91rem;
+            letter-spacing:.01em; transition:background .2s ease, color .2s ease, transform .2s ease;
+        }
+        .nav-item:hover { background:rgba(247,248,244,.09); color:#f7f8f4; transform:translateX(2px); }
+        .nav-item.active { background:#e9e5d8; color:#17343d; box-shadow:none; font-weight:700; }
+        .nav-item.active::before { content:""; width:5px; height:5px; border-radius:50%; background:var(--accent-primary); position:absolute; right:15px; }
+        .nav-item i { color:#85a7a4; width:21px; }
+        .nav-item.active i { color:var(--accent-primary); }
+        .nav-section-label { color:#72918e; font:500 .64rem var(--mono); text-transform:uppercase; letter-spacing:.16em; margin:0 12px 8px; }
+        .system-status { margin-top:auto; padding:14px; border-radius:8px; background:rgba(233,229,216,.08); border:1px solid rgba(233,229,216,.15); color:#eef2eb; font:600 .72rem var(--mono); letter-spacing:.04em; }
+        .system-status div { font-family:'DM Sans',sans-serif; letter-spacing:0; color:#9db9b5!important; }
+        .status-dot { background:#6fc28e; box-shadow:0 0 0 4px rgba(111,194,142,.12); width:7px; height:7px; }
+        .main-content { padding:28px 46px 56px; max-width:1600px; }
+        .topbar { margin-bottom:42px; }
+        .topbar::before { content:"NEXUS / OPERATIONS"; color:var(--text-muted); font:500 .65rem var(--mono); letter-spacing:.14em; }
+        .search-bar { order:2; width:300px; background:rgba(247,248,244,.72); border:1px solid var(--glass-border); border-radius:7px; padding:10px 13px; }
+        .search-bar:focus-within { border-color:var(--accent-secondary); box-shadow:0 0 0 3px rgba(40,107,112,.10); }
+        .search-bar input { color:var(--text-main); font-size:.86rem; }
+        .search-bar i { color:var(--accent-secondary); }
+        .user-profile { order:3; gap:18px; }
+        .user-profile > i { color:var(--text-muted)!important; }
+        .avatar { width:36px; height:36px; border-radius:7px; background:#d9773d; color:#fff5e8; font:700 .82rem var(--mono); box-shadow:0 4px 10px rgba(217,119,61,.2); cursor:default; }
+        .page-title { font-size:clamp(2rem,3.4vw,3.4rem); line-height:1.02; letter-spacing:-.055em; color:var(--text-main); }
+        .page-subtitle { color:var(--text-muted); margin:11px 0 34px; font-size:.98rem; }
+        #dashboard .page-title::before { content:"01"; display:block; color:var(--accent-primary); font:500 .72rem var(--mono); letter-spacing:.15em; margin-bottom:12px; }
+        #dashboard .page-subtitle { max-width:520px; }
+        .dashboard-signal { display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:12px; margin:0 0 29px; }
+        .signal-strip { background:rgba(247,248,244,.76); border:1px solid var(--glass-border); border-radius:8px; padding:16px 18px; box-shadow:var(--shadow-sm); }
+        .signal-strip.primary { background:#17343d; color:#f3f1e9; border-color:#17343d; }
+        .signal-kicker { color:var(--text-muted); font:500 .64rem var(--mono); letter-spacing:.13em; text-transform:uppercase; }
+        .signal-strip.primary .signal-kicker { color:#9db9b5; }
+        .signal-value { margin-top:9px; font:600 1.15rem 'Space Grotesk',sans-serif; }
+        .signal-value span { color:var(--accent-primary); }
+        .apps-grid { grid-template-columns:repeat(12, 1fr); gap:14px; }
+        .app-card {
+            grid-column:span 4; min-height:245px; background:rgba(247,248,244,.82); border:1px solid var(--glass-border); border-radius:9px;
+            padding:22px; gap:17px; box-shadow:var(--shadow-sm); transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+        }
+        .app-card:nth-child(4), .app-card:nth-child(5) { grid-column:span 6; min-height:215px; }
+        .app-card::before { display:none; }
+        .app-card::after { content:""; position:absolute; left:0; top:0; width:100%; height:3px; background:var(--accent-secondary); opacity:.8; }
+        .app-card:nth-child(2)::after { background:var(--accent-primary); }
+        .app-card:nth-child(3)::after { background:#b94b45; }
+        .app-card:nth-child(4)::after { background:#6a8c73; }
+        .app-card:nth-child(5)::after { background:#8b7960; }
+        .app-card:hover { transform:translateY(-4px); background:#fbfcf8; border-color:#b6c7c1; box-shadow:var(--shadow-md); }
+        .app-icon { width:42px; height:42px; border-radius:7px; color:var(--accent-secondary); background:#e0ece9; font-size:1.05rem; }
+        .app-card:nth-child(2) .app-icon { color:var(--accent-primary); background:#fae8da; }
+        .app-card:nth-child(3) .app-icon { color:#b94b45; background:#f5dfdc; }
+        .app-card:nth-child(4) .app-icon { color:#6a8c73; background:#e3ede2; }
+        .app-card:nth-child(5) .app-icon { color:#8b7960; background:#eee8dc; }
+        .app-title { font-size:1.13rem; letter-spacing:-.02em; color:var(--text-main); }
+        .app-desc { color:var(--text-muted); font-size:.87rem; line-height:1.6; }
+        .app-footer { padding-top:15px; border-color:var(--glass-border); color:var(--text-muted); }
+        .app-footer span { font:500 .7rem var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+        .app-footer span i { color:var(--accent-success)!important; }
+        .launch-btn, .btn-primary, .btn-secondary, .back-btn, .icon-btn {
+            font-family:'DM Sans',sans-serif; transition:transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+        }
+        .launch-btn { border:1px solid #c8d2ca; background:#f0f3ee; color:var(--accent-secondary); padding:7px 11px; border-radius:6px; font-weight:700; }
+        .launch-btn:hover { background:var(--accent-secondary); border-color:var(--accent-secondary); color:#f7f8f4; transform:translateX(2px); }
+        .workspace-header { padding-bottom:20px; margin-bottom:20px; border-bottom:1px solid var(--glass-border); }
+        .workspace-header .page-title { font-size:clamp(1.8rem,3vw,2.7rem); }
+        .workspace-header .page-title::before { content:"WORKSPACE"; display:block; color:var(--accent-primary); font:500 .67rem var(--mono); letter-spacing:.18em; margin-bottom:11px; }
+        .workspace-header .page-subtitle { margin:9px 0 0; font:500 .72rem var(--mono); color:var(--text-muted); letter-spacing:.07em; text-transform:uppercase; }
+        .back-btn { background:transparent; border:1px solid var(--glass-border); color:var(--accent-secondary); padding:10px 13px; border-radius:6px; font-weight:700; }
+        .back-btn:hover { background:#e0ece9; border-color:#b6cbc4; }
+        .tabs { gap:0; margin-bottom:16px; border-bottom:1px solid var(--glass-border); }
+        .tab-btn { color:var(--text-muted); padding:11px 16px; font-size:.82rem; }
+        .tab-btn:hover { color:var(--text-main); }
+        .tab-btn.active { color:var(--accent-secondary); border-bottom-color:var(--accent-primary); }
+        .control-panel, .miner-config, .miner-console, .compression-stats .stat-card, .md-preview-container {
+            background:rgba(247,248,244,.82); border:1px solid var(--glass-border); box-shadow:var(--shadow-sm);
+        }
+        .control-panel { border-radius:8px; padding:17px; gap:10px; }
+        .control-panel input { background:#edf1ec; border:1px solid #cbd5ce; color:var(--text-main); border-radius:6px; padding:11px 12px; font-family:var(--mono); font-size:.8rem; }
+        .control-panel input:focus { border-color:var(--accent-secondary); box-shadow:0 0 0 3px rgba(40,107,112,.10); }
+        .icon-btn { background:#edf1ec; border-color:#cbd5ce; color:var(--accent-secondary); border-radius:6px; }
+        .icon-btn:hover:not(:disabled) { background:var(--accent-secondary); color:#f7f8f4; border-color:var(--accent-secondary); }
+        .toggle-group { gap:18px; margin:17px 0; flex-wrap:wrap; }
+        .toggle-label { color:var(--text-muted); font-size:.82rem; }
+        .toggle-input { border-color:#bfcac2; background:#edf1ec; }
+        .toggle-input:checked { background:var(--accent-secondary); border-color:var(--accent-secondary); }
+        .toggle-input:checked::after { color:#f7f8f4; }
+        .terminal-output { background:#17343d; border:0; border-radius:8px; color:#bfe0c2; font:400 .78rem/1.7 var(--mono); box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); }
+        .btn-primary { background:var(--accent-secondary); border-color:var(--accent-secondary); color:#f7f8f4; border-radius:6px; }
+        .btn-primary:hover { background:#1c555b; transform:translateY(-1px); }
+        .btn-secondary { border-color:#cbd5ce; background:#f0f3ee; color:var(--text-main); border-radius:6px; }
+        .btn-secondary:hover { border-color:var(--accent-secondary); color:var(--accent-secondary); }
+        .drop-zone { border:1px dashed #afc1ba; background:rgba(247,248,244,.7); border-radius:9px; padding:4.5rem 2rem; }
+        .drop-zone:hover, .drop-zone.dragover { border-color:var(--accent-primary); background:#f9eee5; transform:translateY(-2px); }
+        .drop-zone i { color:var(--accent-primary); }
+        .drop-zone h3 { color:var(--text-main); }
+        .compression-stats { gap:12px; margin-top:17px; }
+        .compression-stats .stat-card { padding:17px; border-radius:8px; }
+        .stat-label { color:var(--text-muted); font:500 .64rem var(--mono); letter-spacing:.12em; }
+        .stat-value { color:var(--text-main); font-size:1.65rem; }
+        .stat-value.success { color:var(--accent-success); text-shadow:none; }
+        .md-preview-container { background:#17343d; border-radius:8px; margin-top:17px; }
+        .md-header { background:rgba(9,25,31,.3); border-color:rgba(255,255,255,.11); padding:12px 16px; color:#edf2eb; }
+        .md-preview { color:#d6e5dd; font:400 .8rem/1.7 var(--mono); }
+        .section-heading { display:flex; align-items:center; gap:12px; margin:0 0 13px; }
+        .section-rule { height:1px; flex:1; background:var(--glass-border); }
+        .section-count, .step-mark { color:var(--text-muted); font:500 .64rem var(--mono); letter-spacing:.08em; }
+        .tool-intro { margin:0 0 15px; }
+        .tool-intro p { color:var(--text-muted); margin-top:5px; font-size:.88rem; }
+        .action-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+        .panel-label { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+        .miner-config h3 i { color:var(--accent-primary); margin-right:4px; }
+        input[type="file"]::file-selector-button { border:1px solid #cbd5ce; border-radius:5px; background:#f7f8f4; color:var(--accent-secondary); padding:6px 9px; margin-right:8px; font:600 .75rem 'DM Sans',sans-serif; cursor:pointer; }
+        .close-modal { color:var(--text-muted); }
+        .close-modal:hover { color:var(--accent-danger); }
+        .picker-loading { align-items:center; justify-content:center; }
+        .miner-grid { grid-template-columns:minmax(280px,.8fr) minmax(0,1.5fr); gap:14px; height:calc(100dvh - 220px); min-height:520px; }
+        .miner-config, .miner-console { border-radius:9px; padding:20px; }
+        .miner-config h3 { color:var(--text-main); letter-spacing:-.02em; }
+        .miner-config .drop-zone { background:#edf1ec; border-color:#cbd5ce; }
+        .miner-config .drop-zone:hover { background:#f9eee5; }
+        .console-header { background:#17343d; border:0; color:#edf2eb; padding:14px 16px; font:600 .82rem var(--mono); letter-spacing:.04em; }
+        .miner-console .terminal-output { border-radius:0; }
+        .app-fullscreen { left:var(--sidebar-width); width:calc(100% - var(--sidebar-width)); background:var(--bg-deep); }
+        .floating-back-btn { top:18px; right:22px; background:#17343d; border-color:rgba(255,255,255,.14); color:#edf2eb; border-radius:6px; box-shadow:0 8px 20px rgba(18,38,51,.16); }
+        .floating-back-btn:hover { background:var(--accent-primary); border-color:var(--accent-primary); color:#fff5e8; }
+        .modal-overlay { background:rgba(18,38,51,.48); backdrop-filter:blur(5px); }
+        .modal-content { background:#f7f8f4; border-color:#cbd5ce; border-radius:9px; box-shadow:var(--shadow-md); }
+        .modal-header, .modal-footer { border-color:var(--glass-border); }
+        .modal-header h3 { color:var(--accent-secondary); }
+        .modal-breadcrumb { background:#edf1ec; border-color:var(--glass-border); }
+        .folder-item:hover { background:#e0ece9; border-color:#bfd1ca; }
+        .folder-item i { color:var(--accent-primary); }
+        .folder-item.drive i { color:var(--accent-secondary); }
+        .path-text { color:var(--text-muted); }
+        :focus-visible { outline:3px solid rgba(217,119,61,.42); outline-offset:3px; }
+        @media (max-width: 1100px) {
+            .main-content { padding:25px 28px 45px; }
+            .apps-grid .app-card, .apps-grid .app-card:nth-child(4), .apps-grid .app-card:nth-child(5) { grid-column:span 6; }
+            .dashboard-signal { grid-template-columns:1fr 1fr; }
+            .signal-strip.primary { grid-column:1 / -1; }
+        }
+        @media (max-width: 760px) {
+            :root { --sidebar-width:0px; }
+            .app-shell { display:block; }
+            .sidebar { position:fixed; left:-290px; width:278px; transition:left .25s ease; }
+            .sidebar.mobile-open { left:0; }
+            .main-content { margin-left:0; padding:18px 16px 38px; }
+            .topbar { margin-bottom:32px; gap:12px; flex-wrap:wrap; }
+            .topbar::before { order:1; flex:1; }
+            .search-bar { order:4; width:100%; }
+            .user-profile { order:3; }
+            .mobile-nav-toggle { display:flex!important; order:2; }
+            .page-title { font-size:2.2rem; }
+            .dashboard-signal { grid-template-columns:1fr; }
+            .signal-strip.primary { grid-column:auto; }
+            .apps-grid .app-card, .apps-grid .app-card:nth-child(4), .apps-grid .app-card:nth-child(5) { grid-column:1 / -1; min-height:210px; }
+            .workspace-header { align-items:flex-start; gap:16px; }
+            .workspace-header .page-title { font-size:2rem; }
+            .workspace-header .back-btn { white-space:nowrap; padding:9px 10px; font-size:.78rem; }
+            .control-panel { flex-direction:column; align-items:stretch; }
+            .control-panel > div { flex-wrap:wrap; }
+            .tabs { overflow-x:auto; }
+            .tab-btn { white-space:nowrap; padding:11px 12px; }
+            .miner-grid { display:flex; flex-direction:column; height:auto; min-height:0; }
+            .miner-console { min-height:420px; }
+            .compression-stats { grid-template-columns:1fr; }
+            .md-header { align-items:flex-start; gap:10px; flex-direction:column; }
+            .app-fullscreen { left:0; width:100%; }
+            .floating-back-btn { top:12px; right:12px; }
+            .modal-content { width:calc(100vw - 24px); height:min(610px, calc(100dvh - 24px)); }
+        }
+        @media (min-width:761px) { .mobile-nav-toggle { display:none!important; } }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo"><i class="fas fa-cubes"></i> NEXUS</div>
+            <div class="nav-section-label">Workspace index</div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-view="dashboard" tabindex="0"><i class="fas fa-th-large"></i><span>Command center</span></li>
+                <li class="nav-item" data-view="ws-1" tabindex="0"><i class="fas fa-folder-tree"></i><span>Drive lister</span></li>
+                <li class="nav-item" data-view="ws-2" tabindex="0"><i class="fas fa-oil-well"></i><span>Data miner</span></li>
+                <li class="nav-item" data-view="ws-3" tabindex="0"><i class="fas fa-file-pdf"></i><span>PDF compressor</span></li>
+                <li class="nav-item" data-view="ws-4" tabindex="0"><i class="fas fa-chart-gantt"></i><span>Weekly synthese</span></li>
+                <li class="nav-item" data-view="ws-5" tabindex="0"><i class="fas fa-file-contract"></i><span>Monthly reports</span></li>
+            </ul>
+            <div class="system-status"><span class="status-dot"></span> SYSTEM ONLINE<div style="font-size:0.75rem; color:var(--text-muted); margin-top:5px;">v8.0.0 · Auto-connect active</div></div>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <button class="icon-btn mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation"><i class="fas fa-bars"></i></button>
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search modules..." aria-label="Search modules"></div>
+                <div class="user-profile"><i class="fas fa-bell" style="color:var(--text-muted); cursor:pointer;" aria-label="Notifications"></i><div class="avatar" aria-label="User YB">YB</div></div>
+            </header>
+            <section id="dashboard" class="view active">
+                <h1 class="page-title">Operations command center</h1>
+                <p class="page-subtitle">A controlled surface for moving from raw files to reliable reporting.</p>
+                <div class="dashboard-signal" aria-label="System summary">
+                    <div class="signal-strip primary"><div class="signal-kicker">Operating posture</div><div class="signal-value"><span>●</span> All core instruments ready</div></div>
+                    <div class="signal-strip"><div class="signal-kicker">Last workspace</div><div class="signal-value">Drive lister <span>·</span> idle</div></div>
+                    <div class="signal-strip"><div class="signal-kicker">Connection</div><div class="signal-value">Local services <span>·</span> live</div></div>
+                </div>
+                <div class="section-heading"><span class="signal-kicker">Native instruments</span><span class="section-rule"></span><span class="section-count">05 modules</span></div>
+                <div class="apps-grid">
+                    <div class="app-card" data-target="ws-1" tabindex="0"><div class="app-icon"><i class="fas fa-folder-tree"></i></div><div><h3 class="app-title">Drive Content Lister</h3><p class="app-desc">Scan, browse, and perform deep diff-comparisons across local or network drive directories.</p></div><div class="app-footer"><span><i class="fas fa-circle" style="color:var(--accent-success); font-size:8px;"></i> Ready</span><button class="launch-btn" onclick="showView('ws-1')">Open instrument <i class="fas fa-arrow-right"></i></button></div></div>
+                    <div class="app-card" data-target="ws-2" tabindex="0"><div class="app-icon"><i class="fas fa-oil-well"></i></div><div><h3 class="app-title">Seismic Data Miner</h3><p class="app-desc">Production-grade ETL pipeline. Consolidates SIT1, SIT2, and STACK Excel logs into master datasets.</p></div><div class="app-footer"><span><i class="fas fa-circle" style="color:var(--accent-success); font-size:8px;"></i> Ready</span><button class="launch-btn" onclick="showView('ws-2')">Open instrument <i class="fas fa-arrow-right"></i></button></div></div>
+                    <div class="app-card" data-target="ws-3" tabindex="0"><div class="app-icon"><i class="fas fa-file-pdf"></i></div><div><h3 class="app-title">AI PDF Compressor</h3><p class="app-desc">Extracts layout-aware text and compresses PDFs into ultra-compact Markdown for LLM ingestion.</p></div><div class="app-footer"><span><i class="fas fa-circle" style="color:var(--accent-success); font-size:8px;"></i> Ready</span><button class="launch-btn" onclick="showView('ws-3')">Open instrument <i class="fas fa-arrow-right"></i></button></div></div>
+                    <div class="app-card" data-target="ws-4" tabindex="0"><div class="app-icon"><i class="fas fa-chart-gantt"></i></div><div><h3 class="app-title">Synthese Hebdomadaire</h3><p class="app-desc">Visualize and export weekly reader timelines. Handles cross-midnight continuous session mapping.</p></div><div class="app-footer"><span><i class="fas fa-circle" style="color:var(--accent-success); font-size:8px;"></i> Ready</span><button class="launch-btn" onclick="showView('ws-4')">Open instrument <i class="fas fa-arrow-right"></i></button></div></div>
+                    <div class="app-card" data-target="ws-5" tabindex="0"><div class="app-icon"><i class="fas fa-file-contract"></i></div><div><h3 class="app-title">Monthly Report Generator</h3><p class="app-desc">Automated Sonatrach E&amp;P Situation reporting. Compiles data into heavily formatted DOCX files.</p></div><div class="app-footer"><span><i class="fas fa-circle" style="color:var(--accent-success); font-size:8px;"></i> Ready</span><button class="launch-btn" onclick="showView('ws-5')">Open instrument <i class="fas fa-arrow-right"></i></button></div></div>
+                </div>
+            </section>
+
+            <section id="ws-1" class="view">
+                <div class="workspace-header"><div><h1 class="page-title">Drive Content Lister</h1><p class="page-subtitle">Module 01 · File system analyzer</p></div><button class="back-btn" onclick="showView('dashboard')"><i class="fas fa-arrow-left"></i> Back to Hub</button></div>
+                <div class="tabs"><button class="tab-btn active" onclick="switchTab('tab-list', event)">List directory</button><button class="tab-btn" onclick="switchTab('tab-compare', event)">Compare directories</button><button class="tab-btn" onclick="switchTab('tab-files', event)">Compare TXT files</button></div>
+                <div id="tab-list" class="tab-content active"><div class="tool-intro"><span class="signal-kicker">Directory listing</span><p>Inspect a path with only the level of detail you need.</p></div><div class="control-panel"><i class="fas fa-folder" style="color: var(--accent-primary); font-size: 1.2rem;"></i><input type="text" id="list-path" placeholder="Directory path (e.g., C:\ or /Users)" value="/"><button class="icon-btn" onclick="openDirPicker('list-path')" title="Browse Folders"><i class="fas fa-folder-open"></i></button></div><div class="toggle-group"><label class="toggle-label"><input type="checkbox" class="toggle-input" id="list-hidden"> Show hidden</label><label class="toggle-label"><input type="checkbox" class="toggle-input" id="list-sizes" checked> Show sizes</label><label class="toggle-label"><input type="checkbox" class="toggle-input" id="list-recursive"> Recursive</label></div><div class="action-row"><button class="launch-btn" onclick="runListMode('display')" style="padding: 0.6rem 1.2rem; border-radius: 8px;"><i class="fas fa-terminal"></i> Scan &amp; display</button><button class="launch-btn" style="padding: 0.6rem 1.2rem; border-radius: 8px; border-color:var(--accent-warning); color:var(--accent-warning);" onclick="runListMode('export')"><i class="fas fa-download"></i> Export to TXT</button></div></div>
+                <div id="tab-compare" class="tab-content"><div class="tool-intro"><span class="signal-kicker">Directory comparison</span><p>Put two paths under the same lens and surface the meaningful differences.</p></div><div class="control-panel" style="flex-direction: column; align-items: stretch; gap: 1rem;"><div style="display:flex; gap:1rem; align-items:center;"><i class="fas fa-folder" style="color: var(--accent-warning);"></i><input type="text" id="compare-path-a" placeholder="Path A" value="/" style="flex:1;"><button class="icon-btn" onclick="openDirPicker('compare-path-a')" title="Browse Folders"><i class="fas fa-folder-open"></i></button></div><div style="display:flex; gap:1rem; align-items:center;"><i class="fas fa-folder" style="color: var(--accent-secondary);"></i><input type="text" id="compare-path-b" placeholder="Path B" value="/" style="flex:1;"><button class="icon-btn" onclick="openDirPicker('compare-path-b')" title="Browse Folders"><i class="fas fa-folder-open"></i></button></div></div><div class="toggle-group"><label class="toggle-label"><input type="checkbox" class="toggle-input" id="compare-hidden"> Show hidden</label></div><div class="action-row"><button class="launch-btn" onclick="runCompareMode('display')" style="padding: 0.6rem 1.2rem; border-radius: 8px;"><i class="fas fa-code-compare"></i> Compare</button><button class="launch-btn" style="padding: 0.6rem 1.2rem; border-radius: 8px; border-color:var(--accent-warning); color:var(--accent-warning);" onclick="runCompareMode('export')"><i class="fas fa-download"></i> Export to TXT</button></div></div>
+                <div id="tab-files" class="tab-content"><div class="tool-intro"><span class="signal-kicker">Text file comparison</span><p>Compare previously exported listings without leaving the hub.</p></div><div class="control-panel" style="flex-direction: column; align-items: stretch; gap: 1rem;"><div style="display:flex; gap:1rem; align-items:center;"><i class="fas fa-file-alt" style="color: var(--accent-primary);"></i><input type="file" id="file-a" style="flex:1; color:var(--text-muted);"></div><div style="display:flex; gap:1rem; align-items:center;"><i class="fas fa-file-alt" style="color: var(--accent-secondary);"></i><input type="file" id="file-b" style="flex:1; color:var(--text-muted);"></div></div><div class="action-row"><button class="launch-btn" onclick="runFileCompareMode('display')" style="padding: 0.6rem 1.2rem; border-radius: 8px;"><i class="fas fa-code-compare"></i> Compare files</button><button class="launch-btn" style="padding: 0.6rem 1.2rem; border-radius: 8px; border-color:var(--accent-warning); color:var(--accent-warning);" onclick="runFileCompareMode('export')"><i class="fas fa-download"></i> Export to TXT</button></div></div>
+                <pre class="terminal-output" id="terminal-output"></pre>
+            </section>
+
+            <section id="ws-2" class="view">
+                <div class="workspace-header"><div><h1 class="page-title">Seismic Data Miner</h1><p class="page-subtitle">Module 02 · ETL pipeline · SIT1 / SIT2 / STACK</p></div><button class="back-btn" onclick="showView('dashboard')"><i class="fas fa-arrow-left"></i> Back to Hub</button></div>
+                <div class="miner-grid">
+                    <div class="miner-config"><div class="panel-label"><span class="signal-kicker">Input staging</span><span class="step-mark">01 / 02</span></div><h3 style="margin-bottom:1rem; font-family:'Space Grotesk';"><i class="fas fa-sliders-h"></i> Pipeline configuration</h3>
+                        <div class="drop-zone" id="miner-template-zone" style="padding: 2rem; margin-bottom: 1.5rem;"><i class="fas fa-file-excel" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><h4>Master template</h4><p style="font-size: 0.8rem; color: var(--text-muted);">receptions_template.xlsx</p><input type="file" id="miner-template-input" accept=".xlsx,.xls" style="display:none;"><button class="launch-btn" style="margin-top:1rem; font-size:0.8rem;" onclick="document.getElementById('miner-template-input').click()">Select template</button><div id="miner-template-name" style="margin-top:0.5rem; font-size:0.8rem; color:var(--accent-success);"></div></div>
+                        <div class="drop-zone" id="miner-source-zone" style="padding: 2rem;"><i class="fas fa-folder-plus" style="font-size: 2rem; margin-bottom: 0.5rem;"></i><h4>Source data files</h4><p style="font-size: 0.8rem; color: var(--text-muted);">SIT1, SIT2, STACK (.xls/.xlsx)</p><input type="file" id="miner-source-input" accept=".xlsx,.xls" multiple style="display:none;"><button class="launch-btn" style="margin-top:1rem; font-size:0.8rem;" onclick="document.getElementById('miner-source-input').click()">Select source files</button><div id="miner-source-name" style="margin-top:0.5rem; font-size:0.8rem; color:var(--accent-success);"></div></div>
+                        <button id="miner-run-btn" class="btn-primary" style="width:100%; margin-top:2rem; padding: 1rem; font-size: 1rem; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="runMiner()"><i class="fas fa-play"></i> Execute ETL pipeline</button>
+                    </div>
+                    <div class="miner-console"><div class="console-header"><span><i class="fas fa-terminal"></i> Execution log</span><span id="miner-status" style="color:var(--text-muted); font-size:0.8rem;">Idle</span></div><pre class="terminal-output active" id="miner-terminal" style="margin-top:0; height: 100%; max-height: none; display:block;">Awaiting execution command...
+</pre><div id="miner-download-panel" style="padding: 1.5rem; background: rgba(61, 122, 97, 0.1); border-top: 1px solid var(--glass-border); display:none; align-items:center; justify-content:space-between;"><span style="font-weight:600; color:var(--accent-success);"><i class="fas fa-check-circle"></i> Pipeline completed successfully</span><span style="font-size:0.8rem; color:var(--text-muted);">Download triggered automatically.</span></div></div>
+                </div>
+            </section>
+
+            <section id="ws-3" class="view"><div class="workspace-header"><div><h1 class="page-title">AI PDF Compressor</h1><p class="page-subtitle">Module 03 · Token optimization engine</p></div><button class="back-btn" onclick="showView('dashboard')"><i class="fas fa-arrow-left"></i> Back to Hub</button></div><div class="tool-intro"><span class="signal-kicker">Document reduction</span><p>Turn layout-heavy source documents into compact, readable Markdown for downstream analysis.</p></div><div class="drop-zone" id="pdf-drop-zone"><i class="fas fa-cloud-arrow-up"></i><h3>Initialize compression sequence</h3><p style="color:var(--text-muted); margin-bottom: 1.5rem;">Drop PDF document here or click to browse local files.</p><input type="file" id="pdf-file-input" accept=".pdf" style="display:none;"><button class="launch-btn" onclick="document.getElementById('pdf-file-input').click()" style="padding: 0.6rem 1.5rem; border-radius: 8px;">Select PDF file</button></div><div class="control-panel" style="margin-top: 1.5rem; justify-content: space-between;"><div class="toggle-group" style="margin: 0;"><label class="toggle-label" title="Removes common stopwords (the, a, is) to maximize token density."><input type="checkbox" class="toggle-input" id="pdf-aggressive"> Aggressive mode (LLM optimized)</label></div><span id="pdf-filename" style="font-family: monospace; color: var(--text-muted); font-size: 0.9rem;"></span></div><div class="compression-stats" id="pdf-stats"><div class="stat-card"><div class="stat-label">Original size</div><div class="stat-value" id="stat-original">-</div></div><div class="stat-card"><div class="stat-label">Compressed size</div><div class="stat-value" id="stat-compressed">-</div></div><div class="stat-card"><div class="stat-label">Data reduction</div><div class="stat-value success" id="stat-reduction">-</div></div></div><div class="md-preview-container" id="md-preview-container"><div class="md-header"><span style="font-family: 'Space Grotesk'; font-weight: 600;"><i class="fas fa-code"></i> Markdown output</span><div style="display:flex; gap:1rem;"><button class="icon-btn" style="width:auto; padding: 0 1rem; font-size: 0.8rem;" onclick="copyMarkdown()"><i class="fas fa-copy"></i> Copy</button><button class="btn-primary" style="padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="downloadMarkdown()"><i class="fas fa-download"></i> Download .md</button></div></div><pre class="md-preview" id="md-preview-text"></pre></div></section>
+            
+            <!-- MODULE 4 (Fullscreen) -->
+            <section id="ws-4" class="view">
+                <button class="floating-back-btn" onclick="showView('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back to Hub
+                </button>
+                <iframe src="/synthese" class="app-fullscreen"></iframe>
+            </section>
+
+            <!-- MODULE 5 (Fullscreen & Auto-Connect) -->
+            <section id="ws-5" class="view">
+                <button class="floating-back-btn" onclick="showView('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back to Hub
+                </button>
+                <!-- Auto-connects to port 5001 immediately -->
+                <iframe src="http://localhost:5001" class="app-fullscreen"></iframe>
+            </section>
+        </main>
+    </div>
+
+    <div id="dir-picker-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-folder-open"></i> Select Directory</h3><button class="close-modal" onclick="closeDirPicker()"><i class="fas fa-times"></i></button></div><div class="modal-breadcrumb"><button id="picker-up-btn" class="icon-btn" disabled><i class="fas fa-level-up-alt"></i></button><span id="picker-current-path" class="path-text">My Computer</span></div><div id="picker-loading" class="picker-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div><div id="picker-error" class="picker-error"></div><div id="picker-folders" class="folder-grid"></div><div class="modal-footer"><button class="btn-secondary" onclick="closeDirPicker()">Cancel</button><button class="btn-primary" id="picker-select-btn" onclick="confirmPicker()">Select Current Folder</button></div></div></div>
+
+    <script>
+        const navItems = document.querySelectorAll('.nav-item'); const appCards = document.querySelectorAll('.app-card'); const views = document.querySelectorAll('.view');
+        function showView(viewId) { views.forEach(v => v.classList.remove('active')); const target = document.getElementById(viewId); if (target) { target.classList.add('active'); target.style.animation = 'none'; target.offsetHeight; target.style.animation = null; } navItems.forEach(item => { item.classList.remove('active'); if(item.getAttribute('data-view') === viewId) item.classList.add('active'); }); if(viewId === 'dashboard') document.querySelector('.nav-item[data-view="dashboard"]').classList.add('active'); }
+        navItems.forEach(item => item.addEventListener('click', () => { showView(item.getAttribute('data-view')); document.getElementById('sidebar').classList.remove('mobile-open'); })); appCards.forEach(card => card.addEventListener('click', () => showView(card.getAttribute('data-target'))));
+         function switchTab(tabId, clickEvent) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabId).classList.add('active'); const activeButton = clickEvent ? clickEvent.currentTarget : document.querySelector(`.tab-btn[onclick*="${tabId}"]`); if (activeButton) activeButton.classList.add('active'); document.getElementById('terminal-output').classList.remove('active'); }
+        function showTerminal(lines) { const term = document.getElementById('terminal-output'); term.textContent = lines.join('\n').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ''); term.classList.add('active'); term.scrollTop = term.scrollHeight; }
+        async function runListMode(mode) { const path = document.getElementById('list-path').value; const show_hidden = document.getElementById('list-hidden').checked; const show_sizes = document.getElementById('list-sizes').checked; const recursive = document.getElementById('list-recursive').checked; if(mode === 'export') { const response = await fetch('/api/drive/list', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({path, show_hidden, show_sizes, recursive, export: true}) }); const blob = await response.blob(); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `drive_listing_${Date.now()}.txt`; a.click(); window.URL.revokeObjectURL(url); } else { const term = document.getElementById('terminal-output'); term.textContent = "Scanning..."; term.classList.add('active'); const response = await fetch('/api/drive/list', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({path, show_hidden, show_sizes, recursive, export: false}) }); const data = await response.json(); showTerminal(data.lines); } }
+        async function runCompareMode(mode) { const path_a = document.getElementById('compare-path-a').value; const path_b = document.getElementById('compare-path-b').value; const show_hidden = document.getElementById('compare-hidden').checked; if(mode === 'export') { const response = await fetch('/api/drive/compare', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({path_a, path_b, show_hidden, export: true}) }); const blob = await response.blob(); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `drive_compare_${Date.now()}.txt`; a.click(); window.URL.revokeObjectURL(url); } else { const term = document.getElementById('terminal-output'); term.textContent = "Comparing..."; term.classList.add('active'); const response = await fetch('/api/drive/compare', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({path_a, path_b, show_hidden, export: false}) }); const data = await response.json(); showTerminal(data.lines); } }
+        async function runFileCompareMode(mode) { const fileA = document.getElementById('file-a').files[0]; const fileB = document.getElementById('file-b').files[0]; if(!fileA || !fileB) { alert('Please select both files.'); return; } const formData = new FormData(); formData.append('file_a', fileA); formData.append('file_b', fileB); formData.append('export', mode === 'export' ? 'true' : 'false'); if(mode === 'export') { const response = await fetch('/api/drive/compare-files', { method: 'POST', body: formData }); const blob = await response.blob(); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `listings_compare_${Date.now()}.txt`; a.click(); window.URL.revokeObjectURL(url); } else { const term = document.getElementById('terminal-output'); term.textContent = "Parsing and comparing..."; term.classList.add('active'); const response = await fetch('/api/drive/compare-files', { method: 'POST', body: formData }); const data = await response.json(); showTerminal(data.lines); } }
+        let activePickerInput = null; function openDirPicker(inputId) { activePickerInput = document.getElementById(inputId); document.getElementById('dir-picker-modal').classList.add('active'); loadPickerRoots(); } function closeDirPicker() { document.getElementById('dir-picker-modal').classList.remove('active'); activePickerInput = null; } function confirmPicker() { if(activePickerInput) { activePickerInput.value = document.getElementById('picker-current-path').textContent; } closeDirPicker(); }
+        async function loadPickerRoots() { const grid = document.getElementById('picker-folders'); const loading = document.getElementById('picker-loading'); const error = document.getElementById('picker-error'); grid.innerHTML = ''; error.textContent = ''; loading.style.display = 'flex'; document.getElementById('picker-current-path').textContent = 'My Computer'; document.getElementById('picker-up-btn').disabled = true; try { const res = await fetch('/api/drive/roots'); const data = await res.json(); loading.style.display = 'none'; data.roots.forEach(root => { const div = document.createElement('div'); div.className = 'folder-item drive'; div.innerHTML = `<i class="fas fa-hdd"></i> <span>${root}</span>`; div.onclick = () => loadPickerPath(root); grid.appendChild(div); }); } catch(e) { loading.style.display = 'none'; error.textContent = 'Failed to load drives.'; } }
+        async function loadPickerPath(path) { const grid = document.getElementById('picker-folders'); const loading = document.getElementById('picker-loading'); const error = document.getElementById('picker-error'); const upBtn = document.getElementById('picker-up-btn'); grid.innerHTML = ''; error.textContent = ''; loading.style.display = 'flex'; document.getElementById('picker-current-path').textContent = path; upBtn.disabled = false; try { const res = await fetch('/api/drive/folders', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({path: path}) }); const data = await res.json(); loading.style.display = 'none'; if(!res.ok) { error.textContent = data.error || 'Access Denied'; return; } if(data.parent) { upBtn.onclick = () => loadPickerPath(data.parent); } else { upBtn.onclick = () => loadPickerRoots(); } if(data.dirs.length === 0) { grid.innerHTML = '<div class="empty-picker">Empty directory</div>'; } else { data.dirs.forEach(dir => { const div = document.createElement('div'); div.className = 'folder-item'; div.innerHTML = `<i class="fas fa-folder"></i> <span>${dir.name}</span>`; div.onclick = () => loadPickerPath(dir.full_path); grid.appendChild(div); }); } } catch(e) { loading.style.display = 'none'; error.textContent = 'Network error.'; } }
+        let currentMarkdown = ""; const dropZone = document.getElementById('pdf-drop-zone'); const fileInput = document.getElementById('pdf-file-input'); ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, preventDefaults, false); }); function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); } ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false); }); ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); }); dropZone.addEventListener('drop', (e) => { handleFiles(e.dataTransfer.files); }); fileInput.addEventListener('change', (e) => { handleFiles(e.target.files); });
+        async function handleFiles(files) { if (files.length === 0) return; const file = files[0]; if (!file.name.toLowerCase().endsWith('.pdf')) { alert('Please select a PDF file.'); return; } document.getElementById('pdf-filename').textContent = `Processing: ${file.name}...`; document.getElementById('pdf-stats').classList.remove('active'); document.getElementById('md-preview-container').classList.remove('active'); const formData = new FormData(); formData.append('file', file); formData.append('aggressive', document.getElementById('pdf-aggressive').checked); try { const response = await fetch('/api/pdf/compress', { method: 'POST', body: formData }); const data = await response.json(); if (!response.ok) { alert(`Error: ${data.error}`); document.getElementById('pdf-filename').textContent = ''; return; } document.getElementById('pdf-filename').textContent = `Optimized: ${file.name}`; document.getElementById('stat-original').textContent = `${data.original_kb} KB`; document.getElementById('stat-compressed').textContent = `${data.compressed_kb} KB`; document.getElementById('stat-reduction').textContent = `-${data.reduction_percent}%`; document.getElementById('pdf-stats').classList.add('active'); currentMarkdown = data.markdown; document.getElementById('md-preview-text').textContent = data.markdown; document.getElementById('md-preview-container').classList.add('active'); } catch (error) { alert('Network error or server failure.'); document.getElementById('pdf-filename').textContent = ''; } }
+        function copyMarkdown() { navigator.clipboard.writeText(currentMarkdown).then(() => { alert('Markdown copied to clipboard!'); }); } function downloadMarkdown() { const blob = new Blob([currentMarkdown], { type: 'text/markdown' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `compressed_ai_${Date.now()}.md`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+        
+        document.getElementById('miner-template-input').addEventListener('change', (e) => { document.getElementById('miner-template-name').textContent = e.target.files[0] ? `Selected: ${e.target.files[0].name}` : ''; });
+        document.getElementById('miner-source-input').addEventListener('change', (e) => { document.getElementById('miner-source-name').textContent = e.target.files.length ? `${e.target.files.length} files selected` : ''; });
+        async function runMiner() {
+            const templateInput = document.getElementById('miner-template-input'); const sourceInput = document.getElementById('miner-source-input');
+            if (!templateInput.files.length || !sourceInput.files.length) { alert('Please select both a template and source files.'); return; }
+            const formData = new FormData(); formData.append('template', templateInput.files[0]);
+            for (let i = 0; i < sourceInput.files.length; i++) { formData.append('sources', sourceInput.files[i]); }
+            const terminal = document.getElementById('miner-terminal'); terminal.textContent = '';
+            document.getElementById('miner-status').textContent = 'Processing...'; document.getElementById('miner-status').style.color = 'var(--accent-warning)';
+            document.getElementById('miner-run-btn').disabled = true; document.getElementById('miner-download-panel').style.display = 'none';
+            try {
+                const response = await fetch('/api/miner/stream', { method: 'POST', body: formData });
+                const reader = response.body.getReader(); const decoder = new TextDecoder();
+                while (true) {
+                    const { done, value } = await reader.read(); if (done) break;
+                    const chunk = decoder.decode(value); const lines = chunk.split('\n\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.substring(6)); terminal.textContent += String(data.log || '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '') + '\n'; terminal.scrollTop = terminal.scrollHeight;
+                                if (data.download_url) {
+                                    const a = document.createElement('a'); a.href = data.download_url; a.download = 'receptions_filled.xlsx';
+                                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                                }
+                                if (data.done) {
+                                    document.getElementById('miner-status').textContent = 'Completed'; document.getElementById('miner-status').style.color = 'var(--accent-success)';
+                                    document.getElementById('miner-run-btn').disabled = false;
+                                    if (data.success) document.getElementById('miner-download-panel').style.display = 'flex';
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+            } catch (error) { terminal.textContent += '\nNetwork error or server failure.\n'; document.getElementById('miner-status').textContent = 'Error'; document.getElementById('miner-status').style.color = 'var(--accent-danger)'; document.getElementById('miner-run-btn').disabled = false; }
+        }
+        const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+        if (mobileNavToggle) mobileNavToggle.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('mobile-open'));
+        navItems.forEach(item => item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showView(item.getAttribute('data-view')); document.getElementById('sidebar').classList.remove('mobile-open'); }
+        }));
+        appCards.forEach(card => card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showView(card.getAttribute('data-target')); }
+        }));
+        const moduleSearch = document.querySelector('.search-bar input');
+        if (moduleSearch) moduleSearch.addEventListener('input', () => {
+            const query = moduleSearch.value.trim().toLowerCase();
+            appCards.forEach(card => { card.hidden = query && !card.textContent.toLowerCase().includes(query); });
+        });
+    </script>
+</body>
+</html>

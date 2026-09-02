@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de Rapport Mensuel — Situation Package E&P</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>📊 Générateur de Rapport Mensuel</h1>
+    <p class="subtitle">Situation Package E&P — Sonatrach DDS <span class="version-badge">v2.0 Enhanced</span></p>
+  </div>
+  <button id="btn-dark-mode" class="btn btn-ghost btn-sm" title="Mode sombre">🌙</button>
+</header>
+
+<main class="container">
+
+  <ol class="steps">
+    <li class="step active" data-step="1"><span>1</span>Modèle Word</li>
+    <li class="step" data-step="2"><span>2</span>Excel Situation Package</li>
+    <li class="step" data-step="3"><span>3</span>Excel Réception (optionnel)</li>
+    <li class="step" data-step="4"><span>4</span>Validation & génération</li>
+  </ol>
+
+  <!-- STEP 1: WORD TEMPLATE -->
+  <section class="card" id="card-word">
+    <h2>1. Modèle Word (.docx)</h2>
+    <p class="hint">Le modèle contenant les sections <strong>VI-1</strong> et <strong>VI-3</strong>.</p>
+
+    <div class="dropzone" id="dz-word">
+      <input type="file" id="input-word" accept=".docx" hidden>
+      <div class="dz-content">
+        <span class="dz-icon">📄</span>
+        <span class="dz-text" id="dz-word-text">Cliquez ou glissez-déposez le fichier .docx ici</span>
+      </div>
+    </div>
+
+    <div id="word-status" class="file-status"></div>
+
+    <div id="template-report" class="validation-report hidden">
+      <div class="validation-header">
+        <h3>Vérification du modèle</h3>
+        <span id="overall-badge" class="badge"></span>
+        <button id="btn-revalidate" class="btn btn-ghost btn-sm hidden">Revérifier</button>
+      </div>
+      <div class="validation-grid">
+        <div>
+          <h4>VI-1 — Package de données</h4>
+          <ul id="vi1-list" class="check-list"></ul>
+        </div>
+        <div>
+          <h4>VI-3 — Réception des données</h4>
+          <ul id="vi3-list" class="check-list"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2: EXCEL -->
+  <section class="card" id="card-excel">
+    <h2>2. Excel — Situation Package (VI-1)</h2>
+    <p class="hint">Le fichier export "Situation Package" (colonnes commençant par <strong>BDD</strong>).</p>
+
+    <div class="dropzone" id="dz-excel">
+      <input type="file" id="input-excel" accept=".xlsx,.xls" hidden>
+      <div class="dz-content">
+        <span class="dz-icon">📊</span>
+        <span class="dz-text" id="dz-excel-text">Cliquez ou glissez-déposez le fichier Excel ici</span>
+      </div>
+    </div>
+
+    <div id="excel-status" class="file-status"></div>
+  </section>
+
+  <!-- DATA QUALITY PANEL -->
+  <section class="card hidden" id="card-data-quality">
+    <h2>📊 Qualité des données</h2>
+    <div id="quality-summary"></div>
+    <button id="btn-view-issues" class="btn btn-secondary btn-sm hidden">Voir les détails</button>
+  </section>
+
+  <!-- STEP 3: RECEPTION -->
+  <section class="card" id="card-reception">
+    <h2>3. Excel — Réception mensuelle (VI-3) <span class="optional-tag">optionnel</span></h2>
+    <p class="hint">Le fichier "rap Mens ..." avec onglets <strong>a. sismique terrain</strong> et <strong>b- Sismique stack</strong>.</p>
+
+    <label class="switch-row">
+      <input type="checkbox" id="toggle-reception">
+      <span class="switch"></span>
+      <span>Remplir aussi la section VI-3 (Réception des données)</span>
+    </label>
+
+    <div id="reception-upload-wrap" class="hidden">
+      <div class="dropzone" id="dz-reception">
+        <input type="file" id="input-reception" accept=".xlsx,.xls" hidden>
+        <div class="dz-content">
+          <span class="dz-icon">📈</span>
+          <span class="dz-text" id="dz-reception-text">Cliquez ou glissez-déposez le fichier Excel de réception ici</span>
+        </div>
+      </div>
+      <div id="reception-status" class="file-status"></div>
+    </div>
+  </section>
+
+  <!-- STEP 4: GENERATION -->
+  <section class="card" id="card-generate">
+    <h2>4. Période, sections & génération</h2>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label for="select-month">Mois à générer (VI-1)</label>
+        <select id="select-month" disabled>
+          <option value="">Uploadez d'abord l'Excel Situation Package…</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label>Sections VI-1 à inclure
+        <span class="cat-toggle-links">
+          <a href="#" id="cat-all">Tout sélectionner</a> /
+          <a href="#" id="cat-none">Tout désélectionner</a>
+        </span>
+      </label>
+      <div class="category-grid">
+        {% for cat in categories %}
+        <label class="checkbox-pill">
+          <input type="checkbox" class="cat-checkbox" value="{{ cat.code }}" checked>
+          <span>{{ cat.label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button id="btn-validate" class="btn btn-secondary" disabled>🔍 Valider les données</button>
+      <button id="btn-preview" class="btn btn-secondary" disabled>👁 Aperçu</button>
+      <button id="btn-generate" class="btn btn-primary" disabled>⚡ Générer le rapport</button>
+    </div>
+
+    <div id="global-error" class="banner banner-error hidden"></div>
+  </section>
+
+  <!-- PREVIEW MODAL -->
+  <div id="preview-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Aperçu des données</h3>
+        <button id="btn-close-preview" class="btn btn-ghost btn-sm">✕</button>
+      </div>
+      <div id="preview-body" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- DATA ISSUES MODAL -->
+  <div id="issues-modal" class="modal hidden">
+    <div class="modal-box" style="max-width: 1000px;">
+      <div class="modal-header">
+        <h3>⚠️ Problèmes détectés</h3>
+        <button id="btn-close-issues" class="btn btn-ghost btn-sm">✕</button>
+      </div>
+      <div id="issues-body" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <section class="card hidden" id="card-result">
+    <h2>Résultat de la génération</h2>
+    <ul id="result-list" class="result-list"></ul>
+    <div class="actions-row">
+      <a id="btn-download" class="btn btn-primary" href="#" download>⬇ Télécharger le rapport</a>
+      <button id="btn-new-report" class="btn btn-secondary">🔄 Nouveau rapport</button>
+    </div>
+  </section>
+
+  <!-- KEYBOARD SHORTCUTS HINT -->
+  <div class="shortcuts-hint">
+    <small>💡 Raccourcis: <kbd>Ctrl+1</kbd> Word · <kbd>Ctrl+2</kbd> Excel · <kbd>Ctrl+3</kbd> Réception · <kbd>Ctrl+P</kbd> Aperçu · <kbd>Ctrl+G</kbd> Générer · <kbd>Esc</kbd> Fermer modal</small>
+  </div>
+
+</main>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+2026-08-09 13:50:43,966 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 13:50:49,904 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-_partie_package&réception.docx' -> c7a448ca-3782-4fee-b244-20985a451fd0.docx
+2026-08-09 13:50:50,077 [INFO] Template validation for 'Rap_Mensuel-DDS-_partie_package&réception.docx': overall=ok
+2026-08-09 13:50:55,860 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> fcab2916-65ba-4964-a124-d10a7518a866.xlsx
+2026-08-09 13:51:09,854 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-07-2026 au  31-07-2026.xls' -> 532c4a90-ba40-4788-a749-6c7af9c3b516.xls
+2026-08-09 13:51:23,443 [INFO] Generate requested: excel=fcab2916-65ba-4964-a124-d10a7518a866.xlsx word=c7a448ca-3782-4fee-b244-20985a451fd0.docx year=2026 month=8 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total'] fill_reception=True
+2026-08-09 13:51:23,755 [INFO] Generated report dcfee011-368a-4850-824c-4c69a231499a (August_2026) — summary: {'PED': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'EDS': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Asset': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'BDD': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Traitement': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SINOPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '1/2 étude(s) matched — not found: 2025-HMD-3D SUD (closest: "2025-HMD-Sud-3D", 83% similar)', 'rows': 1}, 'VI-3 Stack': {'status': 'ok', 'msg': '1 new row(s) added, 0 already present', 'rows': 1}}
+2026-08-09 13:51:26,980 [INFO] Downloaded report dcfee011-368a-4850-824c-4c69a231499a as 'Situation_Package_August_2026.docx'
+2026-08-09 14:07:06,118 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 14:07:11,109 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-_partie_package&réception.docx' -> ad494e88-f515-435f-80ff-ff32273d9b3f.docx
+2026-08-09 14:07:11,309 [INFO] Template validation for 'Rap_Mensuel-DDS-_partie_package&réception.docx': overall=ok
+2026-08-09 14:07:16,116 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 3ac5076d-805c-43b6-a0d6-103bb2697156.xlsx
+2026-08-09 14:07:21,313 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-07-2026 au  31-07-2026.xls' -> b36093b1-d48b-4cbc-a847-f9b8c88d001d.xls
+2026-08-09 14:07:27,364 [INFO] Generate requested: excel=3ac5076d-805c-43b6-a0d6-103bb2697156.xlsx word=ad494e88-f515-435f-80ff-ff32273d9b3f.docx year=2026 month=7 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total'] fill_reception=True
+2026-08-09 14:07:27,763 [INFO] Generated report ea9b3027-71a7-4c94-8bcb-8fb4bb48af89 (July_2026) — summary: {'PED': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'EDS': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'Asset': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'BDD': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'Traitement': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SINOPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '1/2 étude(s) matched — not found: 2025-HMD-3D SUD (closest: "2025-HMD-Sud-3D", 83% similar)', 'rows': 1}, 'VI-3 Stack': {'status': 'ok', 'msg': '1 new row(s) added, 0 already present', 'rows': 1}}
+2026-08-09 14:07:35,655 [INFO] Downloaded report ea9b3027-71a7-4c94-8bcb-8fb4bb48af89 as 'Situation_Package_July_2026.docx'
+2026-08-09 14:18:44,742 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 14:18:48,993 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-_partie_package&réception.docx' -> ae584bc2-f0da-47a5-8bc4-2d4324bdbe2e.docx
+2026-08-09 14:18:49,187 [INFO] Template validation for 'Rap_Mensuel-DDS-_partie_package&réception.docx': overall=ok
+2026-08-09 14:18:53,775 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> a77e2c2e-1333-4492-9e74-d35bc2797487.xlsx
+2026-08-09 14:19:08,577 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-07-2026 au  31-07-2026.xls' -> 5f2d3ab0-e740-49f3-a250-af32aa2e2bd1.xls
+2026-08-09 14:19:13,890 [INFO] Generate requested: excel=a77e2c2e-1333-4492-9e74-d35bc2797487.xlsx word=ae584bc2-f0da-47a5-8bc4-2d4324bdbe2e.docx year=2026 month=7 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total'] fill_reception=True
+2026-08-09 14:19:14,237 [INFO] Generated report 94a49ce6-c89a-4f2e-9b64-92f2e43a90b7 (July_2026) — summary: {'PED': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'EDS': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'Asset': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'BDD': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'Traitement': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SINOPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '2/2 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D")', 'rows': 2}, 'VI-3 Stack': {'status': 'ok', 'msg': '1 new row(s) added, 0 already present', 'rows': 1}}
+2026-08-09 14:19:32,365 [INFO] Downloaded report 94a49ce6-c89a-4f2e-9b64-92f2e43a90b7 as 'Situation_Package_July_2026.docx'
+2026-08-09 14:23:24,903 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 14:33:44,807 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 14:33:45,551 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 14:36:40,411 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 15:15:42,963 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 15:15:43,937 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 15:16:46,304 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 15:19:05,906 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-_partie_package&réception.docx' -> 1229fa6e-81f6-40df-b326-0f27a2afd0ee.docx
+2026-08-09 15:19:06,071 [INFO] Template validation for 'Rap_Mensuel-DDS-_partie_package&réception.docx': overall=ok
+2026-08-09 15:23:11,470 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-_partie_package&réception.docx' -> e567af71-6ec0-41cb-bbd1-0126acc69493.docx
+2026-08-09 15:23:11,696 [INFO] Template validation for 'Rap_Mensuel-DDS-_partie_package&réception.docx': overall=ok
+2026-08-09 15:24:22,432 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 17c643cd-f0d9-44ba-afc4-4ff3d2d03400.xlsx
+2026-08-09 15:27:52,280 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-03-2026 au  31-03-2026.xls' -> cf4593ac-e1b9-48a4-b4e2-96c97546848f.xls
+2026-08-09 15:28:29,347 [INFO] Generate requested: excel=17c643cd-f0d9-44ba-afc4-4ff3d2d03400.xlsx word=e567af71-6ec0-41cb-bbd1-0126acc69493.docx year=2026 month=3 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-08-09 15:28:29,793 [INFO] Generated report f9327d53-fcd9-4671-92f3-e40dbfdca30e (March_2026) — summary: {'PED': {'status': 'ok', 'msg': '7 row(s) written', 'rows': 7}, 'EDS': {'status': 'ok', 'msg': '5 row(s) written', 'rows': 5}, 'Asset': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'BDD': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'Traitement': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SINOPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '4/5 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D") — not found: 2023-HMD-3D (closest: "2025-HMD-Sud-3D", 76% similar)', 'rows': 4}, 'VI-3 Stack': {'status': 'ok', 'msg': '3 new row(s) added, 2 already present', 'rows': 3}}
+2026-08-09 15:28:31,643 [INFO] Downloaded report f9327d53-fcd9-4671-92f3-e40dbfdca30e as 'Situation_Package_March_2026.docx'
+2026-08-09 15:36:30,752 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 15:38:03,592 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-09 15:46:19,684 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-_partie_package&réception.docx' -> e49f77a0-3515-4c06-a694-4f33d0c435c6.docx
+2026-08-09 15:46:19,911 [INFO] Template validation for 'Rap_Mensuel-DDS-_partie_package&réception.docx': overall=ok
+2026-08-09 15:47:22,019 [INFO] Uploaded Word template: 'Rap_Mensuel-Template.docx' -> 42128431-cca5-4365-883e-81930cf95ce5.docx
+2026-08-09 15:47:22,081 [INFO] Template validation for 'Rap_Mensuel-Template.docx': overall=ok
+2026-08-09 15:47:28,151 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 9b88d957-023b-4ac3-ae01-051cbf18deb3.xlsx
+2026-08-09 15:47:38,481 [INFO] Uploaded Reception Data Excel: 'Copie de rap Mens  01-03-2026 au  31-03-2026.xls' -> acf9a717-1f48-47e5-86b9-9bb2584a4cfd.xls
+2026-08-09 15:47:45,474 [INFO] Generate requested: excel=9b88d957-023b-4ac3-ae01-051cbf18deb3.xlsx word=42128431-cca5-4365-883e-81930cf95ce5.docx year=2026 month=3 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-08-09 15:47:45,731 [INFO] Generated report fe5f9b3e-d4bc-4fd2-b7c9-e63eeff21452 (March_2026) — summary: {'PED': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'EDS': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'Asset': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'BDD': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'Traitement': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'SINOPEC': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'ENI': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'ZPEC': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'Total': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'warn', 'msg': 'Heading/table not found in document', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '0/5 étude(s) matched — not found: 2026-SBA-3D (closest: "2026-SIHEM-3D", 70% similar), 2025-EDMSS-3D (closest: "2025-EDM-3D", 90% similar), 2023-HMD-3D (closest: "2026-SIHEM-3D", 70% similar), 2025-HMD-3D SUD (closest: "2025-EDM-3D", 67% similar), 2025-RAH-2D (closest: "2025-DJA-2D", 78% similar)', 'rows': 0}, 'VI-3 Stack': {'status': 'ok', 'msg': '5 new row(s) added, 0 already present', 'rows': 5}}
+2026-08-10 08:27:38,838 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-10 08:37:59,792 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-10 08:38:08,521 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-Template.docx' -> fd01ebfa-2a89-4a1b-90b6-102fad66255a.docx
+2026-08-10 08:38:09,246 [INFO] Template validation for 'Rap_Mensuel-DDS-Template.docx': overall=ok
+2026-08-10 08:38:23,671 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 05cdb3ff-7bf6-4391-98af-4e6ed8330565.xlsx
+2026-08-10 08:38:33,371 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-04-2026 au  30-04-2026.xls' -> 3211dc33-198f-4ab6-b16c-6f19afec7e85.xls
+2026-08-10 08:39:01,367 [INFO] Generate requested: excel=05cdb3ff-7bf6-4391-98af-4e6ed8330565.xlsx word=fd01ebfa-2a89-4a1b-90b6-102fad66255a.docx year=2026 month=4 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-08-10 08:39:02,398 [INFO] Generated report b97a6937-32cc-4aee-a509-55dd2e2fea55 (April_2026) — summary: {'PED': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'EDS': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'Asset': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'BDD': {'status': 'ok', 'msg': '4 row(s) written', 'rows': 4}, 'Traitement': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SINOPEC': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '1/4 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D") — not found: 2025-GS-2D (closest: "2024-GS-2D\n(HASSI BA HAMOU  II)", 88% similar), 2025-ED-3D (closest: "2025-FDN-2D\n(Feidjet Djokhane)", 71% similar), 2026-SBA-3D (closest: "2025-SBA-3D", 89% similar)', 'rows': 1}, 'VI-3 Stack': {'status': 'ok', 'msg': '10 new row(s) added, 0 already present', 'rows': 10}}
+2026-08-10 08:39:03,712 [INFO] Downloaded report b97a6937-32cc-4aee-a509-55dd2e2fea55 as 'Situation_Package_April_2026.docx'
+2026-08-10 09:04:00,559 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-10 09:04:01,647 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-10 09:04:10,684 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-Template.docx' -> 383f4f81-cd77-4bf9-8ec0-e03576235dec.docx
+2026-08-10 09:04:11,666 [INFO] Template validation for 'Rap_Mensuel-DDS-Template.docx': overall=ok
+2026-08-10 09:04:16,727 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 624bebc1-350c-427a-a76d-8ae26f9ddaa6.xlsx
+2026-08-10 09:04:25,525 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-04-2026 au  30-04-2026.xls' -> 1036c29d-fde9-4e4a-a23b-3b0b04ff8860.xls
+2026-08-10 09:05:44,372 [INFO] Generate requested: excel=624bebc1-350c-427a-a76d-8ae26f9ddaa6.xlsx word=383f4f81-cd77-4bf9-8ec0-e03576235dec.docx year=2026 month=4 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-08-10 09:05:45,372 [INFO] Generated report 3ced1c81-2f63-4a67-961b-1e86da82ca56 (April_2026) — summary: {'PED': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'EDS': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'Asset': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'BDD': {'status': 'ok', 'msg': '4 row(s) written', 'rows': 4}, 'Traitement': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SINOPEC': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '1/4 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D") — not found: 2025-GS-2D (closest: "2024-GS-2D\n(HASSI BA HAMOU  II)", 88% similar), 2025-ED-3D (closest: "2025-FDN-2D\n(Feidjet Djokhane)", 71% similar), 2026-SBA-3D (closest: "2025-SBA-3D", 89% similar)', 'rows': 1}, 'VI-3 Stack': {'status': 'ok', 'msg': '10 new row(s) added, 0 already present', 'rows': 10}}
+2026-08-10 09:05:47,199 [INFO] Downloaded report 3ced1c81-2f63-4a67-961b-1e86da82ca56 as 'Situation_Package_April_2026.docx'
+2026-08-10 09:22:13,211 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-10 09:22:26,073 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-Template.docx' -> f489f820-69b9-4692-a081-bceb9787895f.docx
+2026-08-10 09:22:27,177 [INFO] Template validation for 'Rap_Mensuel-DDS-Template.docx': overall=ok
+2026-08-10 09:22:29,643 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 25cf5659-d1e6-4ab7-95a9-59a937527026.xlsx
+2026-08-10 09:22:35,994 [INFO] Uploaded Situation Package Excel: 'rap Mens  01-04-2026 au  30-04-2026.xls' -> f27d0e8e-c523-489e-8090-f88413f5f0f7.xls
+2026-08-10 09:22:36,007 [WARNING] Excel validation failed for 'rap Mens  01-04-2026 au  30-04-2026.xls': Could not find the header row (a row starting with 'BDD') in the Excel file. Check that this is the 'Situation Package' export and that its layout hasn't changed.
+2026-08-10 09:22:41,510 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 8e39d620-7ec1-4a79-85f9-ca4ce5eb98e3.xlsx
+2026-08-10 09:22:48,495 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-04-2026 au  30-04-2026.xls' -> 2210b973-7f32-486a-98f9-8568c136f20e.xls
+2026-08-10 09:23:02,812 [INFO] Generate requested: excel=8e39d620-7ec1-4a79-85f9-ca4ce5eb98e3.xlsx word=f489f820-69b9-4692-a081-bceb9787895f.docx year=2026 month=4 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-08-10 09:23:03,835 [INFO] Generated report b39b32d6-54fb-4d7f-b804-bd1f2c412fcd (April_2026) — summary: {'PED': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'EDS': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'Asset': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'BDD': {'status': 'ok', 'msg': '4 row(s) written', 'rows': 4}, 'Traitement': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'SINOPEC': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '1/4 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D") — not found: 2025-GS-2D (closest: "2024-GS-2D\n(HASSI BA HAMOU  II)", 88% similar), 2025-ED-3D (closest: "2025-FDN-2D\n(Feidjet Djokhane)", 71% similar), 2026-SBA-3D (closest: "2025-SBA-3D", 89% similar)', 'rows': 1}, 'VI-3 Stack': {'status': 'ok', 'msg': '10 new row(s) added, 0 already present', 'rows': 10}}
+2026-08-10 09:23:05,842 [INFO] Downloaded report b39b32d6-54fb-4d7f-b804-bd1f2c412fcd as 'Situation_Package_April_2026.docx'
+2026-08-10 09:58:39,340 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-11 14:33:56,285 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-11 14:40:26,407 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-Template.docx' -> 5f73a657-6092-4163-b36a-87151b529db9.docx
+2026-08-11 14:40:27,707 [INFO] Template validation for 'Rap_Mensuel-DDS-Template.docx': overall=ok
+2026-08-11 14:40:38,570 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 1d82268e-1b9c-470d-86c9-45d3b0cd703d.xlsx
+2026-08-11 14:40:46,897 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-04-2026 au  30-04-2026.xls' -> 05d3b7b1-1c08-4289-8aaf-8dc86506fe40.xls
+2026-08-11 14:42:04,315 [INFO] Generate requested: excel=1d82268e-1b9c-470d-86c9-45d3b0cd703d.xlsx word=5f73a657-6092-4163-b36a-87151b529db9.docx year=2026 month=8 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-08-11 14:42:05,295 [INFO] Generated report e175cbc7-1282-49f8-9eeb-e74e62a19214 (August_2026) — summary: {'PED': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'EDS': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Asset': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'BDD': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Traitement': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'SINOPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '1/4 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D") — not found: 2025-GS-2D (closest: "2024-GS-2D\n(HASSI BA HAMOU  II)", 88% similar), 2025-ED-3D (closest: "2025-FDN-2D\n(Feidjet Djokhane)", 71% similar), 2026-SBA-3D (closest: "2025-SBA-3D", 89% similar)', 'rows': 1}, 'VI-3 Stack': {'status': 'ok', 'msg': '10 new row(s) added, 0 already present', 'rows': 10}}
+2026-08-11 14:42:27,641 [INFO] Generate requested: excel=1d82268e-1b9c-470d-86c9-45d3b0cd703d.xlsx word=5f73a657-6092-4163-b36a-87151b529db9.docx year=2026 month=4 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-08-11 14:42:28,681 [INFO] Generated report 022e22b8-3ada-4377-bf46-184e0dd83c94 (April_2026) — summary: {'PED': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'EDS': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'Asset': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'BDD': {'status': 'ok', 'msg': '4 row(s) written', 'rows': 4}, 'Traitement': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'SINOPEC': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'VI-3 Terrain': {'status': 'warn', 'msg': '1/4 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D") — not found: 2025-GS-2D (closest: "2024-GS-2D\n(HASSI BA HAMOU  II)", 88% similar), 2025-ED-3D (closest: "2025-FDN-2D\n(Feidjet Djokhane)", 71% similar), 2026-SBA-3D (closest: "2025-SBA-3D", 89% similar)', 'rows': 1}, 'VI-3 Stack': {'status': 'ok', 'msg': '10 new row(s) added, 0 already present', 'rows': 10}}
+2026-08-11 14:42:32,274 [INFO] Downloaded report 022e22b8-3ada-4377-bf46-184e0dd83c94 as 'Situation_Package_April_2026.docx'
+2026-08-19 11:36:15,247 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-30 11:02:21,662 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-08-30 11:15:16,622 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-Mai 2026 partie  QC Puits+QC sismique_encrypted_decrypted.docx' -> e8af557c-1630-46e0-94aa-e3c344c99124.docx
+2026-08-30 11:15:17,234 [INFO] Template validation for 'Rap_Mensuel-DDS-Mai 2026 partie  QC Puits+QC sismique_encrypted_decrypted.docx': overall=ok
+2026-08-30 11:15:31,322 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 4ba2b04c-af08-4b65-a89b-c04d6c8c8969.xlsx
+2026-08-30 11:15:48,254 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-07-2026 au  31-07-2026.xls' -> bd07f7c6-aded-4173-a4ad-f11cf85f1763.xls
+2026-09-02 09:11:23,070 [INFO] Uploaded Word template: 'Rap_Mensuel-DDS-Juin 2026 partie_transcriptionpackage +QC puits+Carto+ QC-SISMIQUE.docx' -> 3393b05f-6d22-4ccd-97f8-2db6e42003f9.docx
+2026-09-02 09:11:23,797 [INFO] Template validation for 'Rap_Mensuel-DDS-Juin 2026 partie_transcriptionpackage +QC puits+Carto+ QC-SISMIQUE.docx': overall=ok
+2026-09-02 09:11:32,298 [INFO] Uploaded Situation Package Excel: 'rap Mens  01-12-2025 au  31-12-2025.xls' -> 33450b31-9487-45f5-944d-730aefcce4df.xls
+2026-09-02 09:11:32,408 [WARNING] Excel validation failed for 'rap Mens  01-12-2025 au  31-12-2025.xls': Could not find the header row (a row starting with 'BDD') in the Excel file. Check that this is the 'Situation Package' export and that its layout hasn't changed.
+2026-09-02 09:11:39,020 [INFO] Uploaded Situation Package Excel: 'Situation_Package_DDS.xlsx' -> 38df2d85-d5f5-46d3-8ff2-221e6b3ba901.xlsx
+2026-09-02 09:11:47,748 [INFO] Uploaded Reception Data Excel: 'rap Mens  01-12-2025 au  31-12-2025.xls' -> e6f7caad-06d3-459a-9725-f70837c35152.xls
+2026-09-02 09:12:10,401 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-09-02 09:12:24,954 [INFO] Generate requested: excel=38df2d85-d5f5-46d3-8ff2-221e6b3ba901.xlsx word=3393b05f-6d22-4ccd-97f8-2db6e42003f9.docx year=2025 month=12 categories=['PED', 'EDS', 'Asset', 'BDD', 'Traitement', 'SINOPEC', 'ENI', 'ZPEC', 'Total', 'SH & ZANGAZ&FILADA'] fill_reception=True
+2026-09-02 09:12:25,945 [INFO] Generated report 1be45acf-e679-4491-83ff-d19d62c936f1 (December_2025) — summary: {'PED': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'EDS': {'status': 'ok', 'msg': '3 row(s) written', 'rows': 3}, 'Asset': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'BDD': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'Traitement': {'status': 'ok', 'msg': '2 row(s) written', 'rows': 2}, 'SINOPEC': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'ENI': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'ZPEC': {'status': 'ok', 'msg': '1 row(s) written', 'rows': 1}, 'Total': {'status': 'info', 'msg': 'No data for this month — old rows cleared', 'rows': 0}, 'SH & ZANGAZ&FILADA': {'status': 'warning', 'msg': 'Heading/table not found in document', 'rows': 0}, 'VI-3 Terrain': {'status': 'warning', 'msg': '4/9 étude(s) matched — 1 via partial/fuzzy match, please verify (2025-HMD-3D SUD — word-order match with "2025-HMD-Sud-3D") — not found: 2025-AA-2D (closest: "2025-RAH-2D", 82% similar), 2024-TEK-3D (closest: "2025-ED-3D", 71% similar), 2025-SBA-3D (closest: "2026-SBA-3D", 89% similar), 2025-SBA-2D (closest: "2025-GS-2D", 82% similar), 2025-FDN-2D (closest: "2025-ED-3D", 71% similar)', 'rows': 4}, 'VI-3 Stack': {'status': 'ok', 'msg': '4 new row(s) added, 0 already present', 'rows': 4}}
+2026-09-02 09:12:30,787 [INFO] Downloaded report 1be45acf-e679-4491-83ff-d19d62c936f1 as 'Situation_Package_December_2025.docx'
+2026-09-02 09:13:42,950 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-09-02 09:19:05,852 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2026-09-02 09:29:47,824 [ERROR] Unhandled error
+Traceback (most recent call last):
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sona26664\AppData\Local\Programs\Python\Python312\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.

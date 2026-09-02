@@ -1,0 +1,4413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthèse Hebdomadaire — Lecteurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --void:#0a0e14;
+  --panel:#131820;
+  --panel-2:#1a2028;
+  --panel-3:#212830;
+  --line:#2a313c;
+  --line-soft:#1f262e;
+  --text:#f1f5f9;
+  --text-dim:#94a3b8;
+  --text-faint:#64748b;
+  --amber:#f59e0b;
+  --amber-dim:#92600a;
+  --amber-glow: rgba(245,158,11,.25);
+  --blue:#3b82f6;
+  --blue-light:#60a5fa;
+  --blue-dim:#1e40af;
+  --green:#10b981;
+  --red:#ef4444;
+  --orange:#f97316;
+  --paper:#f8fafc;
+  --paper-2:#f1f5f9;
+  --ink:#0f172a;
+  --ink-soft:#475569;
+  --mono: 'Space Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --state-lecture:#93C5FD;
+  --state-transcription:#C4B5FD;
+  --state-inactive:#E5E7EB;
+  --state-broken:#FB923C;
+}
+:root[data-theme="light"]{
+  --void:#f8fafc;
+  --panel:#ffffff;
+  --panel-2:#f1f5f9;
+  --panel-3:#e2e8f0;
+  --line:#cbd5e1;
+  --line-soft:#e2e8f0;
+  --text:#0f172a;
+  --text-dim:#475569;
+  --text-faint:#64748b;
+  --amber:#f59e0b;
+  --amber-dim:#d97706;
+  --blue:#3b82f6;
+  --blue-light:#60a5fa;
+  --blue-dim:#2563eb;
+  --green:#10b981;
+  --red:#ef4444;
+  --orange:#f97316;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:var(--sans);
+  min-height:100vh;
+  padding:32px 24px 96px;
+  line-height:1.5;
+  transition: background .3s, color .3s;
+}
+::selection{ background:var(--amber); color:#1a1204; }
+a{color:inherit;}
+button{font-family:inherit;}
+.wrap{ max-width:1400px; margin:0 auto; position:relative; z-index:1; }
+.masthead{
+  background:linear-gradient(135deg, var(--panel-2), var(--panel));
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:24px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,.6);
+  flex-wrap:wrap;
+  transition: all .3s;
+}
+.masthead-title{ display:flex; align-items:center; gap:16px; flex:1; min-width:300px;}
+.masthead-lamp{
+  width:10px; height:10px; border-radius:50%;
+  background:var(--text-faint);
+  flex:none;
+  transition: all .3s;
+}
+.masthead-lamp.on{
+  background:var(--green);
+  box-shadow: 0 0 20px rgba(16,185,129,.6);
+}
+.masthead h1{
+  font-family:var(--sans);
+  font-weight:800;
+  font-size:20px;
+  letter-spacing:-.02em;
+  margin:0;
+  color:var(--text);
+}
+.masthead h1 small{
+  display:block;
+  font-weight:400;
+  font-size:13px;
+  color:var(--text-dim);
+  margin-top:4px;
+}
+.masthead-clock{
+  font-family:var(--mono);
+  font-size:14px;
+  color:var(--text-dim);
+  text-align:right;
+}
+.masthead-clock .time{
+  font-size:18px;
+  color:var(--amber);
+  font-weight:700;
+}
+.theme-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-left:16px;
+}
+.theme-toggle-btn{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--panel-3);
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  transition: all .2s;
+}
+.theme-toggle-btn:hover{
+  background:var(--panel-2);
+  border-color:var(--text-faint);
+  transform:scale(1.05);
+}
+.watch-section{
+  background:linear-gradient(135deg, var(--panel-2), var(--panel));
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px 24px;
+  margin-top:20px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex-wrap:wrap;
+  transition: all .3s;
+}
+.watch-section.active{
+  border-color:var(--green);
+  box-shadow: 0 0 20px rgba(16,185,129,.15);
+}
+.watch-indicator{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:var(--text-faint);
+  flex:none;
+  position:relative;
+}
+.watch-section.active .watch-indicator{
+  background:var(--green);
+  box-shadow: 0 0 12px rgba(16,185,129,.6);
+}
+.watch-section.active .watch-indicator::before{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  border:2px solid var(--green);
+  opacity:.4;
+  animation:watchPulse 2s ease-out infinite;
+}
+@keyframes watchPulse{
+  0%{ transform:scale(1); opacity:.4; }
+  100%{ transform:scale(1.8); opacity:0; }
+}
+.watch-title{
+  font-weight:700;
+  font-size:14px;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.watch-folder{
+  flex:1;
+  min-width:200px;
+  background:var(--panel-3);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:10px 14px;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text-dim);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.watch-folder.empty{
+  color:var(--text-faint);
+  font-style:italic;
+}
+.watch-controls{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.watch-btn{
+  font-weight:600;
+  font-size:13px;
+  padding:8px 16px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--line);
+  background:var(--panel-3);
+  color:var(--text);
+  cursor:pointer;
+  transition: all .2s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.watch-btn:hover{ background:var(--panel-2); border-color:var(--text-faint); }
+.watch-btn.primary{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+.watch-btn.primary:hover{ background:var(--blue-dim); }
+.watch-btn.danger{
+  background:rgba(239,68,68,.15);
+  border-color:var(--red);
+  color:var(--red);
+}
+.watch-btn.danger:hover{ background:rgba(239,68,68,.25); }
+.watch-btn:disabled{ opacity:.4; cursor:not-allowed; }
+.watch-interval{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  color:var(--text-dim);
+}
+.watch-interval select{
+  background:var(--panel-3);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:6px 10px;
+  border-radius:var(--radius-sm);
+  font-size:12px;
+  font-family:var(--mono);
+  cursor:pointer;
+}
+.watch-status{
+  font-size:12px;
+  font-family:var(--mono);
+  color:var(--text-faint);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 10px;
+  background:var(--panel-3);
+  border-radius:20px;
+}
+.watch-status.scanning{
+  color:var(--amber);
+}
+.watch-status.scanning::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border:2px solid var(--amber);
+  border-top-color:transparent;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+.watch-status.idle{
+  color:var(--text-faint);
+}
+.watch-next{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--text-faint);
+  min-width:80px;
+  text-align:right;
+}
+.watch-not-supported{
+  padding:12px 16px;
+  background:rgba(239,68,68,.1);
+  border:1px solid var(--red);
+  border-radius:var(--radius-sm);
+  color:var(--red);
+  font-size:12px;
+  margin-top:12px;
+}
+main{ margin-top:20px; display:flex; flex-direction:column; gap:20px; }
+.section{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  transition: all .3s;
+}
+.section-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:18px 24px;
+  border-bottom:1px solid var(--line-soft);
+}
+.section-num{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--amber);
+  background:rgba(245,158,11,.1);
+  width:26px; height:26px;
+  border-radius:var(--radius-xs);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700;
+  flex:none;
+}
+.section-head h2{
+  font-size:15px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  margin:0;
+  color:var(--text);
+  font-weight:700;
+}
+.section-head p{
+  margin:0 0 0 auto;
+  font-size:13px;
+  color:var(--text-faint);
+  text-align:right;
+}
+.section-body{ padding:24px; }
+.btn{
+  font-weight:600;
+  font-size:14px;
+  padding:10px 18px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  color:var(--text);
+  cursor:pointer;
+  transition: all .2s;
+}
+.btn:hover:not(:disabled){ background:var(--panel-3); border-color:var(--text-faint); }
+.btn:disabled{ opacity:.4; cursor:not-allowed; }
+.btn.primary{
+  background:var(--amber);
+  border-color:var(--amber);
+  color:#1a1204;
+}
+.btn.primary:hover:not(:disabled){ background:#fbbf24; }
+.btn.small{ padding:8px 14px; font-size:13px; }
+.btn.edit{
+  background:rgba(59,130,246,.15);
+  border-color:var(--blue);
+  color:var(--blue-light);
+}
+.btn.edit:hover:not(:disabled){ background:rgba(59,130,246,.25); }
+.dropzone{
+  border:2px dashed var(--line);
+  border-radius:var(--radius);
+  padding:40px 24px;
+  text-align:center;
+  transition: all .2s;
+  cursor:pointer;
+}
+.dropzone:hover, .dropzone.drag{
+  border-color:var(--amber);
+  background:rgba(245,158,11,.03);
+}
+.dropzone .dz-icon{
+  width:48px; height:48px; margin:0 auto 16px;
+  opacity:.7;
+}
+.dropzone .dz-title{
+  font-weight:700; font-size:17px; color:var(--text);
+}
+.dropzone .dz-sub{
+  font-size:14px; color:var(--text-faint); margin-top:8px;
+}
+.dz-actions{ margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+.progress-bar{
+  width:100%;
+  height:6px;
+  background:var(--panel-2);
+  border-radius:3px;
+  overflow:hidden;
+  margin-top:16px;
+  display:none;
+}
+.progress-bar.active{ display:block; }
+.progress-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg, var(--amber), var(--orange));
+  transition: width .3s ease;
+  width:0%;
+}
+.manifest{ margin-top:16px; display:flex; flex-direction:column; gap:6px; }
+.manifest-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--panel-2);
+  padding:12px 16px;
+  border-radius:var(--radius-sm);
+  font-size:14px;
+  transition: background .15s;
+}
+.manifest-row:hover{ background:var(--panel-3); }
+.manifest-row .chk{
+  width:18px; height:18px;
+  accent-color:var(--amber);
+  flex:none;
+  cursor:pointer;
+}
+.manifest-row .fname{
+  font-family:var(--mono);
+  font-size:13px;
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.manifest-row .fstat{
+  font-size:11px;
+  letter-spacing:.05em;
+  padding:4px 10px;
+  border-radius:20px;
+  flex:none;
+  white-space:nowrap;
+  text-transform:uppercase;
+  font-weight:600;
+}
+.fstat.ok{ background:rgba(16,185,129,.15); color:var(--green); }
+.fstat.err{ background:rgba(239,68,68,.15); color:var(--red); }
+.fstat.processing{ background:rgba(245,158,11,.15); color:var(--amber); }
+.manifest-row .frows{ color:var(--text-faint); font-size:12px; flex:none; width:110px; text-align:right; }
+.manifest-row .remove{
+  background:none; border:none; color:var(--text-faint);
+  cursor:pointer; font-size:18px; line-height:1; padding:4px 8px;
+  border-radius:4px;
+  transition: all .15s;
+}
+.manifest-row .remove:hover{ color:var(--red); background:rgba(239,68,68,.1); }
+.manifest-empty{
+  text-align:center; padding:20px; color:var(--text-faint); font-size:14px;
+}
+.manifest-toolbar{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:12px; font-size:13px; color:var(--text-faint);
+}
+.manifest-toolbar .links button{
+  background:none;border:none;color:var(--blue-light);cursor:pointer;font-size:13px;font-family:inherit;
+  text-decoration:underline; text-underline-offset:3px; padding:0; margin-left:12px;
+}
+.week-picker{
+  display:flex; align-items:center; justify-content:center; gap:24px;
+  padding:12px 0;
+}
+.week-nav{
+  width:44px; height:44px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  color:var(--amber);
+  font-size:20px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:.15s;
+  flex:none;
+}
+.week-nav:hover:not(:disabled){ border-color:var(--amber); background:rgba(245,158,11,.08); }
+.week-display{
+  font-family:var(--mono);
+  text-align:center;
+  min-width:320px;
+}
+.week-display .rng{
+  font-size:24px; font-weight:700;
+  color:var(--text);
+}
+.week-display .rng .sep{ color:var(--amber); margin:0 10px; }
+.week-display .rel{
+  font-size:12px; color:var(--text-faint); margin-top:6px;
+  text-transform:uppercase; letter-spacing:.1em;
+}
+.week-jump{
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  margin-top:16px; font-size:14px; color:var(--text-faint);
+}
+.week-jump input[type="date"]{
+  font-family:var(--mono);
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+}
+.week-note{
+  margin-top:16px;
+  font-size:13px;
+  padding:12px 16px;
+  border-radius:var(--radius-sm);
+  background:rgba(245,158,11,.08);
+  border:1px solid var(--amber-dim);
+  color:#fbbf24;
+  display:none;
+}
+.week-note.show{ display:block; }
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:16px;
+  margin-bottom:28px;
+}
+@media (max-width:768px){ .dashboard{ grid-template-columns:repeat(2, 1fr); } }
+.kpi-card{
+  background:linear-gradient(135deg, var(--panel-2), var(--panel-3));
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+  transition: all .3s;
+}
+.kpi-card::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0;
+  height:3px;
+  background:linear-gradient(90deg, var(--amber), var(--orange));
+}
+.kpi-card.blue::before{ background:linear-gradient(90deg, var(--blue), var(--blue-light)); }
+.kpi-card.green::before{ background:linear-gradient(90deg, var(--green), #34d399); }
+.kpi-card.red::before{ background:linear-gradient(90deg, var(--red), #f87171); }
+.kpi-label{
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  margin-bottom:8px;
+  font-weight:600;
+}
+.kpi-value{
+  font-family:var(--mono);
+  font-size:36px;
+  font-weight:700;
+  color:var(--text);
+  line-height:1;
+}
+.kpi-unit{
+  font-size:18px;
+  color:var(--text-dim);
+  margin-left:4px;
+}
+.kpi-sub{
+  font-size:12px;
+  color:var(--text-faint);
+  margin-top:8px;
+}
+.ranking-section{
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:24px;
+  transition: all .3s;
+}
+.ranking-title{
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.ranking-table{
+  display:grid;
+  grid-template-columns: 60px 1fr 100px 120px;
+  gap:8px;
+  align-items:center;
+  font-size:13px;
+}
+.ranking-row{
+  display:contents;
+}
+.ranking-row.header{
+  color:var(--text-faint);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-weight:600;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:8px;
+}
+.ranking-row:not(.header){
+  padding:8px 0;
+  border-bottom:1px solid var(--line-soft);
+}
+.ranking-row:last-child{ border-bottom:none; }
+.ranking-rank{
+  font-family:var(--mono);
+  font-weight:700;
+  color:var(--amber);
+}
+.ranking-driver{
+  font-weight:600;
+  color:var(--text);
+}
+.ranking-hours{
+  font-family:var(--mono);
+  text-align:right;
+  color:var(--text-dim);
+}
+.ranking-bar{
+  height:8px;
+  background:var(--panel-3);
+  border-radius:4px;
+  overflow:hidden;
+  position:relative;
+}
+.ranking-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg, var(--blue), var(--blue-light));
+  border-radius:4px;
+  transition: width .5s ease;
+}
+.preview-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:20px;
+}
+.timeline-legend{
+  display:flex;
+  gap:20px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.legend-item{
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; color:var(--text-dim);
+}
+.legend-swatch{
+  width:20px; height:14px; border-radius:4px; flex:none;
+}
+.controls-row{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:16px;
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  margin-bottom:20px;
+  transition: all .3s;
+}
+.control-group{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.control-label{
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  font-weight:600;
+}
+.control-select{
+  background:var(--panel-3);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  cursor:pointer;
+  transition: all .2s;
+}
+.control-toggle{
+  position:relative;
+  width:44px;
+  height:24px;
+  background:var(--panel-3);
+  border:1px solid var(--line);
+  border-radius:12px;
+  cursor:pointer;
+  transition: all .2s;
+}
+.control-toggle.active{
+  background:var(--blue);
+  border-color:var(--blue);
+}
+.control-toggle::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:18px;
+  height:18px;
+  background:var(--text);
+  border-radius:50%;
+  transition: all .2s;
+}
+.control-toggle.active::after{
+  left:22px;
+}
+.view-toggle{
+  display:flex;
+  background:var(--panel-3);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+}
+.view-toggle-btn{
+  padding:8px 16px;
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-dim);
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  transition: all .2s;
+}
+.view-toggle-btn:hover{
+  color:var(--text);
+  background:rgba(255,255,255,.05);
+}
+.view-toggle-btn.active{
+  background:var(--amber);
+  color:#1a1204;
+}
+.screenshot-cta{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.screenshot-selector{
+  position:relative;
+}
+.screenshot-selector-btn{
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:8px 14px;
+  font-size:13px;
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:180px;
+  transition: all .2s;
+}
+.screenshot-selector-btn:hover{
+  background:var(--panel-3);
+  border-color:var(--text-faint);
+}
+.screenshot-selector-btn::after{
+  content:"▾";
+  font-size:12px;
+  color:var(--text-faint);
+}
+.screenshot-selector-dropdown{
+  position:absolute;
+  top:calc(100% + 4px);
+  right:0;
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  min-width:220px;
+  max-height:300px;
+  overflow-y:auto;
+  z-index:100;
+  display:none;
+}
+.screenshot-selector-dropdown.open{ display:block; }
+.screenshot-selector-option{
+  padding:10px 14px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  transition: background .15s;
+}
+.screenshot-selector-option:hover{ background:var(--panel-3); }
+.screenshot-selector-option input[type="checkbox"]{
+  accent-color:var(--amber);
+  width:16px;
+  height:16px;
+}
+.screenshot-selector-option.select-all{
+  border-bottom:1px solid var(--line);
+  font-weight:600;
+  color:var(--amber);
+}
+.screenshot-status{
+  font-size:13px;
+  color:var(--text-faint);
+}
+.export-buttons{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.drivers-grid{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+.drivers-grid.two-columns{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:20px;
+}
+@media (max-width:1024px){
+  .drivers-grid.two-columns{
+    grid-template-columns:1fr;
+  }
+}
+.driver-card{
+  background:linear-gradient(135deg, var(--panel-2), var(--panel-3));
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow: 0 4px 16px -4px rgba(0,0,0,.4);
+  transition: all .3s;
+}
+.driver-card.zero-week{
+  border-color: var(--red);
+}
+.driver-header{
+  padding:20px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+  border-bottom:1px solid var(--line-soft);
+  gap:12px;
+  flex-wrap:wrap;
+}
+.driver-name{
+  font-size:20px;
+  font-weight:800;
+  color:var(--text);
+  letter-spacing:-.01em;
+  flex:1;
+}
+.driver-header-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.driver-stats{
+  display:flex;
+  gap:24px;
+}
+.driver-stat{
+  text-align:right;
+}
+.driver-stat-label{
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  margin-bottom:2px;
+  font-weight:600;
+}
+.driver-stat-value{
+  font-family:var(--mono);
+  font-size:20px;
+  font-weight:700;
+  color:var(--amber);
+}
+.driver-stat-value.hours{
+  color:var(--blue-light);
+}
+.timeline-container{
+  padding:20px 24px 24px;
+}
+.timeline-header{
+  margin-bottom:8px;
+}
+.timeline-dates-row{
+  display:grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap:2px;
+  margin-bottom:2px;
+  padding:0 2px;
+}
+.timeline-days-row{
+  display:grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap:2px;
+  padding:0 2px;
+}
+.date-cell{
+  text-align:center;
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:700;
+  color:var(--amber);
+  padding:6px 0;
+  background:rgba(245,158,11,.08);
+  border-radius:4px;
+}
+.day-cell{
+  text-align:center;
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  padding:5px 0;
+  background:var(--panel);
+  border-radius:4px;
+}
+.timeline-track-wrapper{
+  position:relative;
+  background:var(--panel);
+  border-radius:var(--radius-sm);
+  padding:12px;
+}
+.timeline-track{
+  position:relative;
+  height:48px;
+  background:var(--void);
+  border-radius:6px;
+  overflow:hidden;
+}
+.timeline-day-divider{
+  position:absolute;
+  top:0; bottom:0;
+  width:1px;
+  background:var(--line);
+  z-index:1;
+}
+.timeline-segment{
+  position:absolute;
+  top:4px; bottom:4px;
+  border-radius:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:13px;
+  white-space:nowrap;
+  overflow:hidden;
+  cursor:pointer;
+  transition: all .2s;
+  min-width:40px;
+}
+.timeline-segment:hover{
+  filter:brightness(1.2);
+  transform:translateY(-1px);
+}
+.segment-reading{
+  background:var(--state-lecture);
+  color:#1e3a8a;
+  box-shadow: 0 2px 8px rgba(147,197,253,.3);
+}
+.segment-transcription{
+  background:var(--state-transcription);
+  color:#5b21b6;
+  box-shadow: 0 2px 8px rgba(196,181,253,.3);
+}
+.segment-inactive{
+  background:var(--state-inactive);
+  color:#6b7280;
+}
+.segment-broken{
+  background:var(--state-broken);
+  color:#9a3412;
+  box-shadow: 0 2px 8px rgba(251,146,60,.3);
+}
+.segment-inactive.full{
+  left:0; right:0;
+  font-size:12px;
+  letter-spacing:.05em;
+}
+.sessions-details{
+  margin-top:20px;
+  padding:16px;
+  background:var(--panel);
+  border-radius:var(--radius-sm);
+  border:1px solid var(--line-soft);
+}
+.sessions-details.hidden{
+  display:none;
+}
+.sessions-details-title{
+  font-size:12px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  font-weight:600;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.sessions-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+.sessions-table th{
+  text-align:left;
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  font-weight:600;
+  padding:8px 12px;
+  border-bottom:1px solid var(--line);
+}
+.sessions-table td{
+  padding:10px 12px;
+  border-bottom:1px solid var(--line-soft);
+  color:var(--text-dim);
+}
+.sessions-table tr:last-child td{
+  border-bottom:none;
+}
+.sessions-table .type-badge{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.type-badge.reading{
+  background:rgba(147,197,253,.2);
+  color:#60a5fa;
+}
+.type-badge.inactive{
+  background:rgba(229,231,235,.2);
+  color:#9ca3af;
+}
+.sessions-table .time-cell{
+  font-family:var(--mono);
+  font-size:12px;
+}
+.sessions-table .duration-cell{
+  font-family:var(--mono);
+  font-weight:700;
+  color:var(--amber);
+}
+.sessions-table tr.reading-row{
+  background:rgba(147,197,253,.05);
+}
+.sessions-table tr.manual-row{
+  background:rgba(245,158,11,.05);
+}
+.sessions-table tr.manual-row td:first-child::before{
+  content:"✏️ ";
+  font-size:10px;
+}
+.sessions-table tr.inactive-total-row{
+  background:rgba(229,231,235,.1);
+  font-weight:600;
+}
+.sessions-table tr.inactive-total-row td{
+  color:var(--text);
+  border-top:2px solid var(--line);
+}
+.preview-empty{
+  text-align:center;
+  padding:60px 24px;
+  color:var(--text-faint);
+  font-size:15px;
+  background:var(--panel-2);
+  border:2px dashed var(--line);
+  border-radius:var(--radius);
+}
+.segment-tooltip{
+  position:fixed;
+  background:#0f172a;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:6px;
+  font-size:12px;
+  font-family:var(--mono);
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:1000;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  border:1px solid var(--line);
+}
+.segment-tooltip .tip-label{
+  color:var(--text-faint);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:4px;
+}
+.export-row{
+  display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+}
+.field{ flex:1; min-width:240px; }
+.field label{
+  display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--text-faint); margin-bottom:8px; font-weight:600;
+}
+.field input[type="text"]{
+  width:100%;
+  font-family:var(--mono);
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:12px 14px;
+  border-radius:var(--radius-sm);
+  font-size:14px;
+  transition: all .2s;
+}
+.export-cta{ flex:none; }
+.btn.export{
+  padding:14px 28px;
+  font-size:14px;
+  letter-spacing:.05em;
+}
+.export-status{
+  margin-top:16px;
+  font-size:14px;
+  color:var(--text-faint);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:20px;
+}
+.export-status.success{ color:var(--green); }
+.export-status.error{ color:var(--red); }
+.export-status .dot{
+  width:8px; height:8px; border-radius:50%; background:currentColor; flex:none;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{ opacity:1; }
+  50%{ opacity:.5; }
+}
+.log-toggle{
+  display:flex; align-items:center; gap:10px;
+  padding:16px 24px;
+  cursor:pointer;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text-faint);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  user-select:none;
+  transition: background .15s;
+}
+.log-toggle:hover{ background:var(--panel-2); }
+.log-toggle .car{ transition:transform .15s; }
+.log-toggle.open .car{ transform:rotate(90deg); }
+.log-body{
+  display:none;
+  padding:0 24px 20px;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text-dim);
+  max-height:300px;
+  overflow-y:auto;
+  line-height:1.8;
+}
+.log-body.open{ display:block; }
+.log-line{ padding:2px 0; border-bottom:1px solid var(--line-soft); }
+.log-line.warn{ color:var(--amber); }
+.log-line.err{ color:var(--red); }
+.log-line .t{ color:var(--text-faint); margin-right:8px; }
+footer.credit{
+  text-align:center;
+  margin-top:24px;
+  font-size:12px;
+  color:var(--text-faint);
+}
+footer.credit b{ color:var(--text-dim); }
+.visually-hidden{
+  position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;
+}
+.spinner{
+  display:inline-block;
+  width:16px;
+  height:16px;
+  border:2px solid var(--line);
+  border-top-color:var(--amber);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-right:8px;
+  vertical-align:middle;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.table-view-mode-toggle{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+.table-view-mode-btn{
+  padding:6px 14px;
+  font-size:12px;
+  font-weight:600;
+  background:var(--panel-3);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  color:var(--text-dim);
+  cursor:pointer;
+  transition: all .2s;
+}
+.table-view-mode-btn:hover{
+  color:var(--text);
+  background:var(--panel-2);
+}
+.table-view-mode-btn.active{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+.table-view-container{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow: 0 4px 16px -4px rgba(0,0,0,.4);
+  transition: all .3s;
+}
+.table-view-container.combined-width{
+  width: calc(50% - 8px);
+  max-width: calc(50% - 8px);
+}
+@media (max-width:1024px){
+  .table-view-container.combined-width{
+    width: 100%;
+    max-width: 100%;
+  }
+}
+.table-view-header{
+  padding:16px 20px;
+  background:linear-gradient(135deg, var(--panel-2), var(--panel-3));
+  border-bottom:1px solid var(--line-soft);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.table-view-title{
+  font-size:15px;
+  font-weight:700;
+  color:var(--text);
+}
+.table-view-week{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--amber);
+  font-weight:600;
+}
+.table-view-wrapper{
+  overflow-x:auto;
+  padding:16px;
+}
+.v2-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+}
+.v2-table th{
+  background:var(--panel-3);
+  padding:10px 6px;
+  text-align:center;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  border-bottom:2px solid var(--line);
+}
+.v2-table th:first-child{
+  text-align:left;
+  padding-left:10px;
+}
+.v2-table th .date{
+  display:block;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--amber);
+  margin-top:2px;
+  font-weight:700;
+}
+.v2-table td{
+  padding:8px 6px;
+  text-align:center;
+  border-bottom:1px solid var(--line-soft);
+}
+.v2-table td:first-child{
+  text-align:left;
+  padding-left:10px;
+  font-weight:600;
+  font-size:12px;
+}
+.v2-table td.edit-cell{
+  padding:4px 6px;
+  width:60px;
+}
+.v2-cell{
+  position:relative;
+  width:100%;
+  height:20px;
+  background:var(--panel-3);
+  border-radius:4px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:10px;
+}
+.v2-cell-bar{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  transition:width .3s ease;
+}
+.v2-cell.busy .v2-cell-bar{
+  background:var(--state-lecture);
+}
+.v2-cell.transcription .v2-cell-bar{
+  background:var(--state-transcription);
+}
+.v2-cell.inactive .v2-cell-bar{
+  background:var(--state-inactive);
+  width:100% !important;
+}
+.v2-cell.broken .v2-cell-bar{
+  background:var(--state-broken);
+  width:100% !important;
+}
+.v2-cell-text{
+  position:relative;
+  z-index:1;
+  color:#1f2937;
+  text-shadow:0 1px 1px rgba(255,255,255,.4);
+  font-weight:700;
+  font-size:10px;
+}
+.v2-legend{
+  display:flex;
+  gap:20px;
+  padding:12px 20px;
+  background:var(--panel-2);
+  border-top:1px solid var(--line-soft);
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.v2-legend-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  color:var(--text-dim);
+}
+.v2-legend-swatch{
+  width:20px;
+  height:14px;
+  border-radius:3px;
+  flex:none;
+}
+.tables-side-by-side{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:16px;
+}
+@media (max-width:1024px){
+  .tables-side-by-side{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ============================================================
+   EDIT MODAL
+   ============================================================ */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(4px);
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open{
+  display:flex;
+}
+.modal{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  width:100%;
+  max-width:800px;
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn{
+  from{ opacity:0; transform:scale(.95) translateY(-10px); }
+  to{ opacity:1; transform:scale(1) translateY(0); }
+}
+.modal-header{
+  padding:20px 24px;
+  border-bottom:1px solid var(--line-soft);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.modal-title{
+  font-size:18px;
+  font-weight:700;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.modal-close{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  transition: all .2s;
+}
+.modal-close:hover{
+  background:rgba(239,68,68,.15);
+  color:var(--red);
+  border-color:var(--red);
+}
+.modal-body{
+  padding:24px;
+  overflow-y:auto;
+  flex:1;
+}
+.modal-footer{
+  padding:16px 24px;
+  border-top:1px solid var(--line-soft);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.modal-footer-actions{
+  display:flex;
+  gap:8px;
+}
+.modal-info{
+  font-size:13px;
+  color:var(--text-dim);
+  padding:12px 16px;
+  background:rgba(59,130,246,.08);
+  border:1px solid rgba(59,130,246,.2);
+  border-radius:var(--radius-sm);
+  margin-bottom:20px;
+}
+.modal-info strong{
+  color:var(--blue-light);
+}
+
+/* Session editor */
+.session-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:20px;
+}
+.session-item{
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:16px;
+  transition: all .2s;
+}
+.session-item:hover{
+  border-color:var(--line-soft);
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+.session-item.manual{
+  border-left:3px solid var(--amber);
+  background:rgba(245,158,11,.03);
+}
+.session-item-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.session-item-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.session-item-badge.reading{
+  background:rgba(147,197,253,.2);
+  color:#60a5fa;
+}
+.session-item-badge.transcription{
+  background:rgba(196,181,253,.2);
+  color:#a78bfa;
+}
+.session-item-badge.inactive{
+  background:rgba(229,231,235,.2);
+  color:#9ca3af;
+}
+.session-item-badge.broken{
+  background:rgba(251,146,60,.2);
+  color:#fb923c;
+}
+.session-item-badge.manual-badge{
+  background:rgba(245,158,11,.15);
+  color:var(--amber);
+  font-size:10px;
+}
+.session-item-actions{
+  display:flex;
+  gap:6px;
+}
+.session-item-btn{
+  padding:4px 10px;
+  font-size:11px;
+  font-weight:600;
+  border-radius:4px;
+  border:1px solid var(--line);
+  background:var(--panel-3);
+  color:var(--text-dim);
+  cursor:pointer;
+  transition: all .15s;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.session-item-btn:hover{
+  background:var(--panel-2);
+  color:var(--text);
+}
+.session-item-btn.delete{
+  border-color:rgba(239,68,68,.3);
+  color:var(--red);
+}
+.session-item-btn.delete:hover{
+  background:rgba(239,68,68,.1);
+  border-color:var(--red);
+}
+.session-item-fields{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+  gap:12px;
+}
+.session-field{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.session-field label{
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--text-faint);
+}
+.session-field input,
+.session-field select{
+  background:var(--panel-3);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:8px 10px;
+  border-radius:4px;
+  font-size:13px;
+  font-family:var(--mono);
+  transition: all .15s;
+}
+.session-field input:focus,
+.session-field select:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(59,130,246,.1);
+}
+.session-field input[type="datetime-local"]{
+  font-size:12px;
+}
+.session-field input:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.session-field select:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.session-empty{
+  text-align:center;
+  padding:30px;
+  color:var(--text-faint);
+  font-size:13px;
+  font-style:italic;
+  background:var(--panel-2);
+  border:2px dashed var(--line);
+  border-radius:var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="masthead-title">
+      <span class="masthead-lamp" id="lamp"></span>
+      <h1>Synthèse Hebdomadaire — Lecteurs
+        <small>Tableau de bord exécutif · Traitement 100% local</small>
+      </h1>
+    </div>
+    <div class="masthead-clock">
+      <div class="time" id="clockTime">--:--:--</div>
+      <div id="clockDate">—</div>
+    </div>
+    <div class="theme-toggle">
+      <button class="theme-toggle-btn" id="themeToggle" type="button" title="Basculer le thème">
+        <span id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="watch-section" id="watchSection">
+    <div class="watch-indicator"></div>
+    <div class="watch-title">
+      <span>👁️ Surveillance Auto</span>
+    </div>
+    <div class="watch-folder empty" id="watchFolderDisplay">Aucun dossier surveillé</div>
+    <div class="watch-interval">
+      <label for="watchInterval">Intervalle :</label>
+      <select id="watchInterval">
+        <option value="15">15 secondes</option>
+        <option value="30" selected>30 secondes</option>
+        <option value="60">1 minute</option>
+        <option value="120">2 minutes</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+        <option value="1800">30 minutes</option>
+      </select>
+    </div>
+    <div class="watch-controls">
+      <button class="watch-btn primary" id="btnSelectWatchFolder">📁 Choisir un dossier</button>
+      <button class="watch-btn danger" id="btnStopWatch" style="display:none;">⏹️ Arrêter</button>
+      <button class="watch-btn" id="btnScanNow" style="display:none;">🔄 Scanner maintenant</button>
+    </div>
+    <div class="watch-status idle" id="watchStatus">Inactif</div>
+    <div class="watch-next" id="watchNext"></div>
+    <div id="watchNotSupported" class="watch-not-supported" style="display:none; width:100%; margin-top:12px;">
+      ⚠️ Votre navigateur ne supporte pas l'API File System Access. Utilisez Chrome, Edge ou Opera pour activer la surveillance automatique. Firefox et Safari ne sont pas supportés.
+    </div>
+  </section>
+
+  <main>
+
+    <section class="section" id="sectionImport">
+      <div class="section-head">
+        <span class="section-num">01</span>
+        <h2>Importer les fichiers</h2>
+        <p>Glissez un dossier ou des fichiers .xlsx</p>
+      </div>
+      <div class="section-body">
+        <div class="dropzone" id="dropzone" tabindex="0">
+          <svg class="dz-icon" viewBox="0 0 48 48" fill="none">
+            <path d="M24 6v24m0 0-8-8m8 8 8-8" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 32v6a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2v-6" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="dz-title">Déposez le dossier de plannings ici</div>
+          <div class="dz-sub">Les sous-dossiers sont scannés automatiquement</div>
+          <div class="dz-actions">
+            <button class="btn primary" id="btnPickFolder" type="button">Choisir un dossier</button>
+            <button class="btn" id="btnPickFiles" type="button">Choisir des fichiers</button>
+          </div>
+          <input type="file" id="folderInput" webkitdirectory multiple class="visually-hidden">
+          <input type="file" id="fileInput" multiple accept=".xlsx" class="visually-hidden">
+        </div>
+
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+
+        <div class="manifest" id="manifest">
+          <div class="manifest-empty" id="manifestEmpty">Aucun fichier importé pour le moment.</div>
+        </div>
+        <div class="manifest-toolbar" id="manifestToolbar" style="display:none;">
+          <span id="manifestSummary"></span>
+          <span class="links">
+            <button id="btnSelectAll" type="button">tout cocher</button>
+            <button id="btnSelectNone" type="button">tout décocher</button>
+            <button id="btnClearAll" type="button">vider la liste</button>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2>Semaine à traiter</h2>
+        <p>Dimanche → Jeudi</p>
+      </div>
+      <div class="section-body">
+        <div class="week-picker">
+          <button class="week-nav" id="weekPrev" type="button">‹</button>
+          <div class="week-display">
+            <div class="rng" id="weekRange">—</div>
+            <div class="rel" id="weekRel">—</div>
+          </div>
+          <button class="week-nav" id="weekNext" type="button">›</button>
+        </div>
+        <div class="week-jump">
+          <label for="weekJumpInput">Aller à :</label>
+          <input type="date" id="weekJumpInput">
+          <button class="btn small" id="btnToday" type="button">Cette semaine</button>
+        </div>
+        <div class="week-note" id="weekNote"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <h2>Tableau de bord</h2>
+        <p id="previewMeta">—</p>
+      </div>
+      <div class="section-body">
+        
+        <div class="dashboard">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Heures</div>
+            <div class="kpi-value" id="kpiTotalHours">0<span class="kpi-unit">h</span></div>
+            <div class="kpi-sub">Semaine complète</div>
+          </div>
+          <div class="kpi-card blue">
+            <div class="kpi-label">Lecteurs Actifs</div>
+            <div class="kpi-value" id="kpiActiveDrivers">0<span class="kpi-unit">/13</span></div>
+            <div class="kpi-sub">avec activité</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-label">Moyenne</div>
+            <div class="kpi-value" id="kpiAvgHours">0<span class="kpi-unit">h</span></div>
+            <div class="kpi-sub">par lecteur actif</div>
+          </div>
+          <div class="kpi-card red">
+            <div class="kpi-label">Taux Utilisation</div>
+            <div class="kpi-value" id="kpiUtilization">0<span class="kpi-unit">%</span></div>
+            <div class="kpi-sub">de la semaine</div>
+          </div>
+        </div>
+
+        <div class="ranking-section" id="rankingSection" style="display:none;">
+          <div class="ranking-title">
+            📊 Classement des lecteurs
+          </div>
+          <div class="ranking-table" id="rankingTable"></div>
+        </div>
+
+        <div class="controls-row">
+          <div class="control-group">
+            <span class="control-label">Vue :</span>
+            <div class="view-toggle" id="viewToggle">
+              <button class="view-toggle-btn active" data-view="timeline">Timeline</button>
+              <button class="view-toggle-btn" data-view="table">Tableau</button>
+            </div>
+          </div>
+          <div class="control-group" id="timelineControls">
+            <span class="control-label">Affichage :</span>
+            <select class="control-select" id="displayMode">
+              <option value="single">1 colonne</option>
+              <option value="double">2 colonnes</option>
+            </select>
+          </div>
+          <div class="control-group" id="detailsControl">
+            <span class="control-label">Détails :</span>
+            <div class="control-toggle active" id="toggleDetails"></div>
+          </div>
+          <div style="flex:1;"></div>
+          <div class="timeline-legend" id="timelineLegend">
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--state-lecture)"></span>Lecture</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--state-transcription)"></span>Transcription</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--state-inactive)"></span>Inactif</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--state-broken)"></span>En panne</div>
+          </div>
+        </div>
+
+        <div class="preview-toolbar">
+          <div class="screenshot-cta">
+            <div class="screenshot-selector">
+              <button class="screenshot-selector-btn" id="screenshotSelectorBtn" type="button">
+                <span id="screenshotSelectorText">Tous les lecteurs</span>
+              </button>
+              <div class="screenshot-selector-dropdown" id="screenshotSelectorDropdown"></div>
+            </div>
+            <div class="export-buttons">
+              <button class="btn small" id="btnScreenshot" type="button" disabled>📷 PNG</button>
+              <button class="btn small" id="btnExportPDF" type="button" disabled>📄 PDF</button>
+              <button class="btn small" id="btnExportHTML" type="button" disabled>🌐 HTML</button>
+              <button class="btn small" id="btnExportExcel" type="button" disabled>📊 Excel</button>
+            </div>
+            <span class="screenshot-status" id="screenshotStatus"></span>
+          </div>
+        </div>
+
+        <div id="timelineView">
+          <div class="drivers-grid" id="driversGrid">
+            <div class="preview-empty">Importez des fichiers pour afficher l'aperçu du rapport.</div>
+          </div>
+        </div>
+
+        <div id="tableView" style="display:none;">
+          <div class="controls-row" style="margin-bottom:16px;">
+            <div class="control-group">
+              <span class="control-label">Mode :</span>
+              <div class="view-toggle" id="tableViewModeToggle">
+                <button class="view-toggle-btn active" data-mode="single">1 tableau</button>
+                <button class="view-toggle-btn" data-mode="double">2 côte à côte</button>
+                <button class="view-toggle-btn" data-mode="combined">Combiné</button>
+              </div>
+            </div>
+            <div style="flex:1;"></div>
+            <div class="control-group">
+              <span class="control-label">Heures :</span>
+              <div class="control-toggle" id="toggleCellHours" title="Afficher les heures dans les cellules"></div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Remplissage :</span>
+              <select class="control-select" id="cellFillMode">
+                <option value="fixed">Fixe (90%)</option>
+                <option value="proportional">Proportionnel (0-24h)</option>
+              </select>
+            </div>
+          </div>
+          <div id="tableViewContent">
+            <div class="preview-empty">Importez des fichiers pour afficher l'aperçu.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <span class="section-num">04</span>
+        <h2>Générer le rapport</h2>
+        <p>Fichier .xlsx prêt à l'emploi</p>
+      </div>
+      <div class="section-body">
+        <div class="export-row">
+          <div class="field">
+            <label for="outName">Nom du fichier de sortie</label>
+            <input type="text" id="outName" spellcheck="false">
+          </div>
+          <div class="export-cta">
+            <button class="btn primary export" id="btnGenerate" type="button" disabled>Télécharger le rapport .xlsx</button>
+          </div>
+        </div>
+        <div class="export-status" id="exportStatus"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="log-toggle" id="logToggle"><span class="car">▸</span> Journal de traitement <span id="logCount" style="margin-left:6px;color:var(--text-faint);"></span></div>
+      <div class="log-body" id="logBody"></div>
+    </section>
+
+  </main>
+
+  <footer class="credit">Traite les journaux OMEGA des lecteurs J1–J14 · Calculs identiques à <b>process_lecteur_schedule.py</b></footer>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span>✏️</span>
+        <span id="editModalTitle">Éditeur de sessions</span>
+      </div>
+      <button class="modal-close" id="editModalClose" type="button">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info">
+        <strong>💡 Astuce :</strong> Les sessions <span style="color:var(--amber);">manuelles</span> (ajoutées ici) sont prioritaires sur les données importées. Vous pouvez ajouter, modifier ou supprimer des entrées pour chaque lecteur. Les modifications sont sauvegardées automatiquement dans votre navigateur.
+      </div>
+      <div id="editSessionList" class="session-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn small" id="editAddSession" type="button">➕ Ajouter une session</button>
+      <div class="modal-footer-actions">
+        <button class="btn small" id="editCancel" type="button">Annuler</button>
+        <button class="btn small primary" id="editSave" type="button">💾 Appliquer les modifications</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+const SHEET_NAME = "Planning";
+const HEADER_ROW = 5;
+const DRIVER_COL = "N°lecteur sur OMEGA";
+const DATE_COL = "Date";
+const START_COL = "Date et Heure d'entrée";
+const END_COL = "Date et Heure de sortie";
+const REQUIRED_COLS = [DRIVER_COL, DATE_COL, START_COL, END_COL];
+const FULL_DRIVER_LIST = ["J1","J2","J3","J4","J5","J6","J7","J8","J9","J10","J11","J13","J14"];
+
+const DRIVER_TYPES = {
+  "J1": "60F", "J2": "60F", "J3": "60F", "J4": "E07", "J5": "E07",
+  "J6": "E07", "J7": "E07", "J8": "E07", "J9": "E07", "J10": "E07",
+  "J11": "E08", "J13": "60F", "J14": "60F"
+};
+
+const DAY_LABELS = ["Dim","Lun","Mar","Mer","Jeu"];
+const MIN_HOUR_SCALE = 0;
+const MAX_HOUR_SCALE = 16;
+const OUTPUT_SHEET_NAME = "Synthèse Hebdomadaire";
+const HEADER_FILL_ARGB = "FFDCE6F1";
+const ZERO_FILL_ARGB = "FFFCE4D6";
+const DATABAR_ARGB = "FF5B9BD5";
+const COLS_PER_BLOCK = 1 + DAY_LABELS.length;
+const BLOCK_GAP_COLS = 2;
+const DRIVERS_PER_ROW = 2;
+const GROUP_GAP_ROWS = 2;
+const BLOCK_ROWS = 3;
+const FR_MONTHS = ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+const FR_MONTHS_LONG = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+
+const WEEK_HOURS = DAY_LABELS.length * 24;
+const HOURS_PER_DAY = 24;
+
+const state = {
+  files: [],
+  targetWeek: computeLastWeekStart(),
+  logs: [],
+  lastResult: null,
+  processing: false,
+  selectedDriversForScreenshot: new Set(),
+  displayMode: "single",
+  showDetails: true,
+  currentView: "timeline",
+  tableViewMode: "single",
+  selectedTablesForExport: new Set(["left", "right"]),
+  theme: localStorage.getItem("theme") || "dark",
+  showCellHours: localStorage.getItem("showCellHours") === "true",
+  cellFillMode: localStorage.getItem("cellFillMode") || "fixed",
+  watchFolderHandle: null,
+  watchInterval: parseInt(localStorage.getItem("watchInterval") || "30", 10),
+  watchTimerId: null,
+  watchNextScanTime: null,
+  watchCountdownId: null,
+  watchActive: false,
+  lastFileSnapshot: new Map(),
+  // Manual sessions: { driverName: [{id, start, end, type}] }
+  manualSessions: loadManualSessions(),
+  // Current editing state
+  editingDriver: null,
+  editingSessions: [], // working copy during edit
+  editingDeletedIds: new Set(), // imported session ids marked for deletion
+};
+let nextFileId = 1;
+let nextSessionId = Date.now();
+let tooltipEl = null;
+
+// ============================================================
+// MANUAL SESSIONS PERSISTENCE
+// ============================================================
+function loadManualSessions(){
+  try{
+    const saved = localStorage.getItem("manualSessions");
+    if (saved){
+      const parsed = JSON.parse(saved);
+      // Convert date strings back to Date objects
+      for (const driver in parsed){
+        parsed[driver] = parsed[driver].map(s => ({
+          ...s,
+          start: new Date(s.start),
+          end: new Date(s.end)
+        }));
+      }
+      return parsed;
+    }
+  }catch(e){
+    console.warn("Failed to load manual sessions:", e);
+  }
+  return {};
+}
+
+function saveManualSessions(){
+  try{
+    localStorage.setItem("manualSessions", JSON.stringify(state.manualSessions));
+  }catch(e){
+    console.warn("Failed to save manual sessions:", e);
+  }
+}
+
+// ============================================================
+// INDEXEDDB HELPERS
+// ============================================================
+const DB_NAME = "lecteurApp";
+const DB_VERSION = 1;
+const STORE_NAME = "handles";
+
+function openIDB(){
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)){
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveFolderHandle(handle){
+  try{
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).put(handle, "watchFolder");
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => reject(tx.error);
+    });
+  }catch(e){ return false; }
+}
+
+async function loadFolderHandle(){
+  try{
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const req = tx.objectStore(STORE_NAME).get("watchFolder");
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }catch(e){ return null; }
+}
+
+async function clearFolderHandle(){
+  try{
+    const db = await openIDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).delete("watchFolder");
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+    });
+  }catch(e){ return false; }
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  document.getElementById("themeIcon").textContent = theme === "dark" ? "🌙" : "☀️";
+  state.theme = theme;
+  localStorage.setItem("theme", theme);
+}
+
+document.getElementById("themeToggle").addEventListener("click", ()=>{
+  applyTheme(state.theme === "dark" ? "light" : "dark");
+});
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function normalizeCellValue(v){
+  if (v === null || v === undefined) return null;
+  if (v instanceof Date) return v;
+  if (typeof v === "object"){
+    if ("result" in v) return normalizeCellValue(v.result);
+    if ("richText" in v) return v.richText.map(t=>t.text).join("");
+    if ("text" in v) return v.text;
+    if ("formula" in v && "result" in v) return normalizeCellValue(v.result);
+    return null;
+  }
+  return v;
+}
+
+function excelSerialToDate(serial){
+  const utcDays = Math.floor(serial - 25569);
+  const utcValue = utcDays * 86400;
+  const date = new Date(utcValue * 1000);
+  const fractionalDay = serial - Math.floor(serial);
+  let totalSeconds = Math.floor(86400 * fractionalDay);
+  const seconds = totalSeconds % 60;
+  totalSeconds -= seconds;
+  const hours = Math.floor(totalSeconds/3600);
+  const minutes = Math.floor(totalSeconds/60) % 60;
+  return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), hours, minutes, seconds);
+}
+
+function toDateTime(raw){
+  const v = normalizeCellValue(raw);
+  if (v === null) return null;
+  if (v instanceof Date && !isNaN(v)) return v;
+  if (typeof v === "number"){
+    if (v > 1 && v < 100000) return excelSerialToDate(v);
+    if (v > 1e9 && v < 1e12) return new Date(v * 1000);
+    if (v > 1e12) return new Date(v);
+    return null;
+  }
+  if (typeof v === "string"){
+    const s = v.trim();
+    if (!s) return null;
+    let d = new Date(s);
+    if (!isNaN(d) && d.getFullYear() > 1900) return d;
+    const formats = [
+      /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})[ T]?(\d{1,2}):(\d{2})(?::(\d{2}))?$/,
+      /^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})[ T]?(\d{1,2}):(\d{2})(?::(\d{2}))?$/,
+    ];
+    for (const format of formats){
+      const m = s.match(format);
+      if (m){
+        let [,a,b,c,hh,mi,ss] = m;
+        let dd, mm, yyyy;
+        if (format === formats[1]){
+          yyyy = a; mm = b; dd = c;
+        } else {
+          dd = a; mm = b; yyyy = c;
+        }
+        if (yyyy.length===2) yyyy = "20"+yyyy;
+        d = new Date(+yyyy, +mm-1, +dd, +hh, +mi, ss?+ss:0);
+        if (!isNaN(d)) return d;
+      }
+    }
+    return null;
+  }
+  return null;
+}
+
+function weekStartSunday(d){
+  const days = d.getDay();
+  const r = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  r.setDate(r.getDate()-days);
+  return r;
+}
+
+function computeLastWeekStart(today){
+  today = today || new Date();
+  const thisWeek = weekStartSunday(today);
+  const dayOfWeek = today.getDay();
+  const r = new Date(thisWeek);
+  if (dayOfWeek <= 1) r.setDate(r.getDate()-14);
+  else r.setDate(r.getDate()-7);
+  return r;
+}
+
+function sameDate(a,b){
+  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+}
+
+function dateKey(d){
+  const p = n => String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+}
+
+function keyToDate(k){
+  const [y,m,d] = k.split("-").map(Number);
+  return new Date(y, m-1, d);
+}
+
+function fmtFrDate(d){
+  return String(d.getDate()).padStart(2,"0") + " " + FR_MONTHS[d.getMonth()];
+}
+
+function fmtFrDateShort(d){
+  return String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0");
+}
+
+function fmtWeekRange(start, end){
+  return fmtFrDateShort(start) + " au " + fmtFrDateShort(end);
+}
+
+function fmtDateTime(d){
+  return fmtFrDateShort(d) + " " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+}
+
+// Format date for datetime-local input
+function toDateTimeLocal(d){
+  if (!(d instanceof Date) || isNaN(d)) return "";
+  const p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes());
+}
+
+function fmtExcelTableDate(d){
+  return String(d.getDate()).padStart(2,"0") + "-" + FR_MONTHS[d.getMonth()].replace(".","");
+}
+
+function computeWeekEnd(weekStart){
+  const end = new Date(weekStart);
+  end.setDate(end.getDate() + DAY_LABELS.length);
+  return end;
+}
+
+function splitShiftAcrossMidnight(start, end){
+  const portions = [];
+  let cursor = new Date(start);
+  while (cursor < end){
+    const nextMidnight = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()+1, 0,0,0);
+    const segmentEnd = end < nextMidnight ? end : nextMidnight;
+    const hours = (segmentEnd - cursor) / 3600000;
+    if (hours > 0) portions.push({key: dateKey(cursor), hours});
+    cursor = segmentEnd;
+  }
+  return portions;
+}
+
+function roundUpHours(hours){
+  return Math.ceil(Math.round(hours*1e6)/1e6);
+}
+
+function naturalDriverSortKey(id){
+  const digits = (id.match(/\d/g) || []).join("");
+  const prefix = id.replace(/\d/g,"");
+  return {prefix, num: digits ? parseInt(digits,10) : 0};
+}
+
+function compareDrivers(a,b){
+  const ka = naturalDriverSortKey(a), kb = naturalDriverSortKey(b);
+  if (ka.prefix !== kb.prefix) return ka.prefix < kb.prefix ? -1 : 1;
+  return ka.num - kb.num;
+}
+
+function colLetter(n){
+  let s = "";
+  while (n > 0){
+    const m = (n-1)%26;
+    s = String.fromCharCode(65+m) + s;
+    n = Math.floor((n-1)/26);
+  }
+  return s;
+}
+
+function shouldSkipFilename(name){
+  if (name.startsWith("~$")) return true;
+  const stem = name.replace(/\.xlsx$/i, "");
+  if (/_weekly_summary$/i.test(stem)) return true;
+  if (/_synth[eè]se_hebdomadaire$/i.test(stem)) return true;
+  return false;
+}
+
+async function parsePlanningFile(arrayBuffer){
+  const wb = new ExcelJS.Workbook();
+  try{
+    await wb.xlsx.load(arrayBuffer);
+  }catch(e){
+    return {valid:false, reason:"Fichier illisible"};
+  }
+  const ws = wb.getWorksheet(SHEET_NAME);
+  if (!ws) return {valid:false, reason:'Feuille "Planning" introuvable'};
+  
+  const headerRow = ws.getRow(HEADER_ROW);
+  const colMap = {};
+  headerRow.eachCell({includeEmpty:false}, (cell, colNumber)=>{
+    const val = normalizeCellValue(cell.value);
+    if (val !== null) colMap[String(val).trim()] = colNumber;
+  });
+  
+  const missing = REQUIRED_COLS.filter(c => !(c in colMap));
+  if (missing.length) return {valid:false, reason:"Colonnes manquantes: " + missing.join(", ")};
+
+  const rows = [];
+  let totalRows = 0, skipped = 0;
+  const lastRow = ws.rowCount;
+  
+  for (let r = HEADER_ROW+1; r <= lastRow; r++){
+    const row = ws.getRow(r);
+    if (!row.hasValues) continue;
+    totalRows += 1;
+    
+    const driverRaw = normalizeCellValue(row.getCell(colMap[DRIVER_COL]).value);
+    const start = toDateTime(row.getCell(colMap[START_COL]).value);
+    const end = toDateTime(row.getCell(colMap[END_COL]).value);
+    
+    if (driverRaw === null || driverRaw === "" || start === null || end === null || !(end > start)){
+      skipped += 1;
+      continue;
+    }
+    rows.push({driver: String(driverRaw).trim(), start, end});
+  }
+
+  return {valid:true, totalRows, keptRows: rows.length, skippedRows: skipped, rows};
+}
+
+function log(msg, level){
+  const t = new Date();
+  const time = String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0")+":"+String(t.getSeconds()).padStart(2,"0");
+  state.logs.push({time, msg, level: level||"info"});
+  renderLog();
+}
+
+function renderLog(){
+  const body = document.getElementById("logBody");
+  const count = document.getElementById("logCount");
+  body.innerHTML = state.logs.slice().reverse().map(l=>{
+    return '<div class="log-line '+(l.level==="warn"?"warn":l.level==="err"?"err":"")+'"><span class="t">'+l.time+'</span>'+escapeHtml(l.msg)+'</div>';
+  }).join("");
+  count.textContent = state.logs.length ? "("+state.logs.length+")" : "";
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+}
+
+// ============================================================
+// FILE INGESTION
+// ============================================================
+async function ingestFiles(fileList){
+  if (state.processing) return;
+  state.processing = true;
+  const arr = Array.from(fileList);
+  const total = arr.length;
+  let processed = 0;
+  
+  showProgress(true);
+  
+  for (const file of arr){
+    if (!/\.xlsx$/i.test(file.name)) continue;
+    if (shouldSkipFilename(file.name)) continue;
+    
+    const relPath = file.webkitRelativePath || file.name;
+    if (state.files.some(f => f.path === relPath && f.size === file.size)) continue;
+
+    const entry = {
+      id: nextFileId++,
+      name: file.name,
+      path: relPath,
+      size: file.size,
+      status: "processing",
+      reason: "",
+      parsed: null,
+      checked: true,
+    };
+    state.files.push(entry);
+    renderManifest();
+
+    try{
+      const buf = await file.arrayBuffer();
+      const result = await parsePlanningFile(buf);
+      if (result.valid){
+        entry.status = "ok";
+        entry.parsed = result;
+        log("✓ "+relPath+" — "+result.keptRows+" lignes valides");
+      } else {
+        entry.status = "err";
+        entry.reason = result.reason;
+        entry.checked = false;
+        log("✗ "+relPath+" — "+result.reason, "warn");
+      }
+    }catch(e){
+      entry.status = "err";
+      entry.reason = e.message;
+      entry.checked = false;
+      log("Erreur: "+relPath, "err");
+    }
+    
+    processed++;
+    updateProgress((processed / total) * 100);
+    renderManifest();
+    recompute();
+  }
+  
+  showProgress(false);
+  state.processing = false;
+}
+
+function showProgress(show){
+  const bar = document.getElementById("progressBar");
+  if (show) bar.classList.add("active");
+  else {
+    bar.classList.remove("active");
+    setTimeout(()=>updateProgress(0), 300);
+  }
+}
+
+function updateProgress(pct){
+  document.getElementById("progressFill").style.width = pct + "%";
+}
+
+function renderManifest(){
+  const wrap = document.getElementById("manifest");
+  const empty = document.getElementById("manifestEmpty");
+  const toolbar = document.getElementById("manifestToolbar");
+  const summary = document.getElementById("manifestSummary");
+
+  if (state.files.length === 0){
+    wrap.innerHTML = "";
+    wrap.appendChild(empty);
+    toolbar.style.display = "none";
+    return;
+  }
+  toolbar.style.display = "flex";
+  wrap.innerHTML = "";
+
+  state.files.forEach(f=>{
+    const row = document.createElement("div");
+    row.className = "manifest-row";
+
+    const chk = document.createElement("input");
+    chk.type = "checkbox";
+    chk.className = "chk";
+    chk.checked = f.checked;
+    chk.disabled = f.status !== "ok";
+    chk.addEventListener("change", ()=>{ f.checked = chk.checked; recompute(); });
+
+    const fname = document.createElement("div");
+    fname.className = "fname";
+    fname.title = f.path;
+    fname.textContent = f.path;
+
+    const stat = document.createElement("div");
+    stat.className = "fstat " + (f.status==="processing"?"processing":f.status==="ok"?"ok":"err");
+    stat.textContent = f.status==="processing" ? "Analyse…" : f.status==="ok" ? "Valide" : "Erreur";
+    if (f.status==="err") stat.title = f.reason;
+
+    const rows = document.createElement("div");
+    rows.className = "frows";
+    rows.textContent = f.status==="ok" ? (f.parsed.keptRows+" / "+f.parsed.totalRows+" lignes") : (f.status==="err" ? f.reason : "");
+
+    const remove = document.createElement("button");
+    remove.className = "remove";
+    remove.innerHTML = "&times;";
+    remove.addEventListener("click", ()=>{
+      state.files = state.files.filter(x=>x.id!==f.id);
+      renderManifest();
+      recompute();
+    });
+
+    row.appendChild(chk);
+    row.appendChild(fname);
+    row.appendChild(stat);
+    row.appendChild(rows);
+    row.appendChild(remove);
+    wrap.appendChild(row);
+  });
+
+  const okCount = state.files.filter(f=>f.status==="ok").length;
+  const checkedCount = state.files.filter(f=>f.status==="ok" && f.checked).length;
+  summary.textContent = checkedCount + " / " + okCount + " fichier(s) sélectionné(s)";
+}
+
+document.getElementById("btnSelectAll").addEventListener("click", ()=>{
+  state.files.forEach(f=>{ if (f.status==="ok") f.checked = true; });
+  renderManifest(); recompute();
+});
+document.getElementById("btnSelectNone").addEventListener("click", ()=>{
+  state.files.forEach(f=>{ f.checked = false; });
+  renderManifest(); recompute();
+});
+document.getElementById("btnClearAll").addEventListener("click", ()=>{
+  state.files = [];
+  state.lastFileSnapshot.clear();
+  renderManifest(); recompute();
+});
+
+// ============================================================
+// DRAG & DROP
+// ============================================================
+const dropzone = document.getElementById("dropzone");
+["dragenter","dragover"].forEach(evt=>{
+  dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add("drag"); });
+});
+["dragleave","drop"].forEach(evt=>{
+  dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove("drag"); });
+});
+dropzone.addEventListener("drop", async e=>{
+  e.preventDefault();
+  const items = e.dataTransfer.items;
+  if (items && items.length && items[0].webkitGetAsEntry){
+    const files = [];
+    const entries = Array.from(items).map(it => it.webkitGetAsEntry()).filter(Boolean);
+    await Promise.all(entries.map(entry => walkEntry(entry, files)));
+    if (files.length) await ingestFiles(files);
+  } else if (e.dataTransfer.files && e.dataTransfer.files.length){
+    await ingestFiles(e.dataTransfer.files);
+  }
+});
+
+function walkEntry(entry, out){
+  return new Promise(resolve=>{
+    if (entry.isFile){
+      entry.file(file=>{
+        try{ Object.defineProperty(file, "webkitRelativePath", {value: entry.fullPath.replace(/^\//,"")}); }catch(_e){}
+        out.push(file);
+        resolve();
+      }, ()=>resolve());
+    } else if (entry.isDirectory){
+      const reader = entry.createReader();
+      const readBatch = ()=>{
+        reader.readEntries(async entries=>{
+          if (!entries.length){ resolve(); return; }
+          await Promise.all(entries.map(en => walkEntry(en, out)));
+          readBatch();
+        }, ()=>resolve());
+      };
+      readBatch();
+    } else resolve();
+  });
+}
+
+dropzone.addEventListener("click", (e)=>{
+  if (e.target.closest("button")) return;
+  document.getElementById("folderInput").click();
+});
+
+document.getElementById("btnPickFolder").addEventListener("click", e=>{
+  e.stopPropagation();
+  document.getElementById("folderInput").click();
+});
+
+document.getElementById("btnPickFiles").addEventListener("click", e=>{
+  e.stopPropagation();
+  document.getElementById("fileInput").click();
+});
+
+document.getElementById("folderInput").addEventListener("change", e=>{
+  ingestFiles(e.target.files);
+  e.target.value = "";
+});
+
+document.getElementById("fileInput").addEventListener("change", e=>{
+  ingestFiles(e.target.files);
+  e.target.value = "";
+});
+
+// ============================================================
+// WEEK MANAGEMENT
+// ============================================================
+function renderWeek(){
+  const start = state.targetWeek;
+  const end = new Date(start); 
+  end.setDate(end.getDate()+4);
+  document.getElementById("weekRange").innerHTML = fmtFrDateShort(start) + '<span class="sep">→</span>' + fmtFrDateShort(end) + " " + end.getFullYear();
+
+  const lastWeek = computeLastWeekStart();
+  const thisWeek = weekStartSunday(new Date());
+  let rel = "";
+  if (sameDate(start, lastWeek)) rel = "semaine dernière";
+  else if (sameDate(start, thisWeek)) rel = "semaine en cours";
+  else {
+    const diffWeeks = Math.round((start - lastWeek) / (7*86400000));
+    rel = diffWeeks > 0 ? ("dans "+diffWeeks+" semaine(s)") : ((-diffWeeks)+" semaine(s) avant");
+  }
+  document.getElementById("weekRel").textContent = rel;
+  document.getElementById("weekJumpInput").value = dateKey(start);
+}
+
+document.getElementById("weekPrev").addEventListener("click", ()=>{
+  const d = new Date(state.targetWeek); 
+  d.setDate(d.getDate()-7);
+  state.targetWeek = d; 
+  renderWeek(); 
+  recompute();
+});
+
+document.getElementById("weekNext").addEventListener("click", ()=>{
+  const d = new Date(state.targetWeek); 
+  d.setDate(d.getDate()+7);
+  state.targetWeek = d; 
+  renderWeek(); 
+  recompute();
+});
+
+document.getElementById("weekJumpInput").addEventListener("change", e=>{
+  const v = e.target.value;
+  if (!v) return;
+  const [y,m,d] = v.split("-").map(Number);
+  state.targetWeek = weekStartSunday(new Date(y, m-1, d));
+  renderWeek(); 
+  recompute();
+});
+
+document.getElementById("btnToday").addEventListener("click", ()=>{
+  state.targetWeek = computeLastWeekStart();
+  renderWeek();
+  recompute();
+});
+
+// ============================================================
+// VIEW TOGGLES
+// ============================================================
+document.querySelectorAll("#viewToggle .view-toggle-btn").forEach(btn=>{
+  btn.addEventListener("click", function(){
+    document.querySelectorAll("#viewToggle .view-toggle-btn").forEach(b=>b.classList.remove("active"));
+    this.classList.add("active");
+    state.currentView = this.dataset.view;
+    
+    document.getElementById("timelineView").style.display = state.currentView === "timeline" ? "block" : "none";
+    document.getElementById("tableView").style.display = state.currentView === "table" ? "block" : "none";
+    
+    document.getElementById("timelineControls").style.display = state.currentView === "timeline" ? "flex" : "none";
+    document.getElementById("detailsControl").style.display = state.currentView === "timeline" ? "flex" : "none";
+    document.getElementById("timelineLegend").style.display = state.currentView === "timeline" ? "flex" : "none";
+    
+    if (state.currentView === "table" && state.lastResult){
+      renderTableView(state.lastResult.sessionsByDriver, state.lastResult.drivers, state.targetWeek, state.lastResult.driverHoursMap);
+    }
+  });
+});
+
+document.getElementById("displayMode").addEventListener("change", e=>{
+  state.displayMode = e.target.value;
+  if (state.lastResult && state.currentView === "timeline"){
+    renderDriverCards(state.lastResult.sessionsByDriver, state.lastResult.drivers, state.targetWeek, computeWeekEnd(state.targetWeek), state.lastResult.driverHoursMap, state.files.length > 0);
+  }
+});
+
+document.getElementById("toggleDetails").addEventListener("click", function(){
+  state.showDetails = !state.showDetails;
+  this.classList.toggle("active");
+  document.querySelectorAll(".sessions-details").forEach(el=>{
+    el.classList.toggle("hidden", !state.showDetails);
+  });
+});
+
+document.querySelectorAll("#tableViewModeToggle .view-toggle-btn").forEach(btn=>{
+  btn.addEventListener("click", function(){
+    document.querySelectorAll("#tableViewModeToggle .view-toggle-btn").forEach(b=>b.classList.remove("active"));
+    this.classList.add("active");
+    state.tableViewMode = this.dataset.mode;
+    if (state.lastResult){
+      renderTableView(state.lastResult.sessionsByDriver, state.lastResult.drivers, state.targetWeek, state.lastResult.driverHoursMap);
+    }
+  });
+});
+
+document.getElementById("toggleCellHours").addEventListener("click", function(){
+  state.showCellHours = !state.showCellHours;
+  this.classList.toggle("active", state.showCellHours);
+  localStorage.setItem("showCellHours", state.showCellHours);
+  if (state.currentView === "table" && state.lastResult){
+    renderTableView(state.lastResult.sessionsByDriver, state.lastResult.drivers, state.targetWeek, state.lastResult.driverHoursMap);
+  }
+});
+
+document.getElementById("cellFillMode").addEventListener("change", function(){
+  state.cellFillMode = this.value;
+  localStorage.setItem("cellFillMode", state.cellFillMode);
+  if (state.currentView === "table" && state.lastResult){
+    renderTableView(state.lastResult.sessionsByDriver, state.lastResult.drivers, state.targetWeek, state.lastResult.driverHoursMap);
+  }
+});
+
+function createTooltip(){
+  if (tooltipEl) return tooltipEl;
+  tooltipEl = document.createElement("div");
+  tooltipEl.className = "segment-tooltip";
+  tooltipEl.style.display = "none";
+  document.body.appendChild(tooltipEl);
+  return tooltipEl;
+}
+
+function showTooltip(e, type, driver, start, end, hours){
+  const tip = createTooltip();
+  const label = type === "reading" ? "📖 LECTURE" : type === "transcription" ? "📝 TRANSCRIPTION" : type === "broken" ? "⚠️ EN PANNE" : "⏸ INACTIF";
+  const driverType = DRIVER_TYPES[driver] || "";
+  tip.innerHTML = `
+    <div class="tip-label">${label} · ${driver}${driverType ? " ("+driverType+")" : ""}</div>
+    <div>${fmtDateTime(start)} → ${fmtDateTime(end)}</div>
+    <div style="margin-top:4px;color:var(--amber);font-weight:700;">${hours}h</div>
+  `;
+  tip.style.display = "block";
+  tip.style.left = (e.clientX + 12) + "px";
+  tip.style.top = (e.clientY - 40) + "px";
+}
+
+function hideTooltip(){
+  if (tooltipEl) tooltipEl.style.display = "none";
+}
+
+// ============================================================
+// RECOMPUTE (with manual sessions merged)
+// ============================================================
+function recompute(){
+  const activeFiles = state.files.filter(f => f.status==="ok" && f.checked);
+
+  const dailyHours = {};
+  const sessionsByDriver = {};
+  let totalRows = 0, keptRows = 0;
+  
+  // Imported sessions
+  for (const f of activeFiles){
+    totalRows += f.parsed.totalRows;
+    keptRows += f.parsed.keptRows;
+    
+    for (const row of f.parsed.rows){
+      const portions = splitShiftAcrossMidnight(row.start, row.end);
+      if (!dailyHours[row.driver]) dailyHours[row.driver] = {};
+      
+      for (const {key, hours} of portions){
+        dailyHours[row.driver][key] = (dailyHours[row.driver][key]||0) + hours;
+      }
+      
+      if (!sessionsByDriver[row.driver]) sessionsByDriver[row.driver] = [];
+      sessionsByDriver[row.driver].push({
+        start: row.start, 
+        end: row.end,
+        id: "import_" + f.id + "_" + row.start.getTime(),
+        source: "import"
+      });
+    }
+  }
+  
+  // Merge manual sessions (override imported ones)
+  for (const driver in state.manualSessions){
+    const manualList = state.manualSessions[driver];
+    if (!manualList || manualList.length === 0) continue;
+    
+    if (!sessionsByDriver[driver]) sessionsByDriver[driver] = [];
+    if (!dailyHours[driver]) dailyHours[driver] = {};
+    
+    for (const manual of manualList){
+      // Add to sessions
+      sessionsByDriver[driver].push({
+        start: new Date(manual.start),
+        end: new Date(manual.end),
+        id: "manual_" + manual.id,
+        source: "manual",
+        type: manual.type || "reading"
+      });
+      
+      // Add hours to daily
+      const portions = splitShiftAcrossMidnight(new Date(manual.start), new Date(manual.end));
+      for (const {key, hours} of portions){
+        dailyHours[driver][key] = (dailyHours[driver][key]||0) + hours;
+      }
+    }
+  }
+
+  let earliest=null, latest=null;
+  for (const driver in dailyHours){
+    for (const k in dailyHours[driver]){
+      const ws_ = weekStartSunday(keyToDate(k));
+      if (!earliest || ws_ < earliest) earliest = ws_;
+      if (!latest || ws_ > latest) latest = ws_;
+    }
+  }
+  
+  const noteEl = document.getElementById("weekNote");
+  if (earliest && !(earliest <= state.targetWeek && state.targetWeek <= latest)){
+    noteEl.textContent = "⚠ La semaine sélectionnée est hors de la plage des fichiers importés";
+    noteEl.classList.add("show");
+  } else {
+    noteEl.classList.remove("show");
+  }
+
+  const driverSet = (activeFiles.length || Object.keys(state.manualSessions).length > 0)
+    ? new Set([...FULL_DRIVER_LIST, ...Object.keys(dailyHours), ...Object.keys(state.manualSessions)])
+    : new Set();
+    
+  const weeklyTables = {};
+  for (const driver of driverSet){
+    const hoursList = new Array(DAY_LABELS.length).fill(0);
+    const dayMap = dailyHours[driver] || {};
+    
+    for (const k in dayMap){
+      const d = keyToDate(k);
+      if (sameDate(weekStartSunday(d), state.targetWeek)){
+        const offset = Math.round((d - state.targetWeek)/86400000);
+        if (offset>=0 && offset<DAY_LABELS.length) hoursList[offset] += dayMap[k];
+      }
+    }
+    weeklyTables[driver] = hoursList;
+  }
+  
+  const drivers = Object.keys(weeklyTables).sort(compareDrivers);
+
+  let totalHours = 0;
+  const driverHoursMap = {};
+  drivers.forEach(d=>{
+    const h = weeklyTables[d].reduce((a,b)=>a+b,0);
+    driverHoursMap[d] = roundUpHours(h);
+    totalHours += roundUpHours(h);
+  });
+
+  const activeDrivers = drivers.filter(d => driverHoursMap[d] > 0).length;
+  const avgHours = activeDrivers > 0 ? Math.round(totalHours / activeDrivers) : 0;
+  const utilization = activeDrivers > 0 ? Math.round((totalHours / (activeDrivers * WEEK_HOURS)) * 100) : 0;
+
+  const weekEnd = computeWeekEnd(state.targetWeek);
+
+  state.lastResult = {
+    dailyHours, sessionsByDriver, weeklyTables, drivers,
+    driverHoursMap, totalHours, activeDrivers, avgHours, utilization,
+    totalRows, keptRows, activeFileCount: activeFiles.length
+  };
+
+  document.getElementById("kpiTotalHours").innerHTML = totalHours + '<span class="kpi-unit">h</span>';
+  document.getElementById("kpiActiveDrivers").innerHTML = activeDrivers + '<span class="kpi-unit">/13</span>';
+  document.getElementById("kpiAvgHours").innerHTML = avgHours + '<span class="kpi-unit">h</span>';
+  document.getElementById("kpiUtilization").innerHTML = utilization + '<span class="kpi-unit">%</span>';
+
+  const weekRangeText = fmtWeekRange(state.targetWeek, new Date(state.targetWeek.getTime() + 4*86400000));
+  document.getElementById("previewMeta").textContent = drivers.length + " lecteurs · semaine du " + weekRangeText;
+
+  renderRanking(drivers, driverHoursMap);
+  
+  if (state.currentView === "timeline"){
+    renderDriverCards(sessionsByDriver, drivers, state.targetWeek, weekEnd, driverHoursMap, state.files.length > 0);
+  } else {
+    renderTableView(sessionsByDriver, drivers, state.targetWeek, driverHoursMap);
+  }
+  
+  renderScreenshotSelector(drivers);
+
+  const lamp = document.getElementById("lamp");
+  const genBtn = document.getElementById("btnGenerate");
+  const exportBtns = ["btnScreenshot","btnExportPDF","btnExportHTML","btnExportExcel"];
+  
+  if (activeFiles.length > 0 || Object.keys(state.manualSessions).length > 0){
+    lamp.classList.add("on");
+    genBtn.disabled = false;
+    exportBtns.forEach(id => document.getElementById(id).disabled = false);
+  } else {
+    lamp.classList.remove("on");
+    genBtn.disabled = true;
+    exportBtns.forEach(id => document.getElementById(id).disabled = true);
+  }
+
+  updateDefaultFilename();
+}
+
+function renderRanking(drivers, driverHoursMap){
+  const section = document.getElementById("rankingSection");
+  const table = document.getElementById("rankingTable");
+  
+  if (drivers.length === 0){
+    section.style.display = "none";
+    return;
+  }
+  
+  section.style.display = "block";
+  
+  const sorted = drivers.slice().sort((a,b) => driverHoursMap[b] - driverHoursMap[a]);
+  const maxHours = Math.max(...sorted.map(d => driverHoursMap[d]), 1);
+  
+  let html = `
+    <div class="ranking-row header">
+      <div>#</div>
+      <div>Lecteur</div>
+      <div style="text-align:right;">Heures</div>
+      <div>Activité</div>
+    </div>
+  `;
+  
+  sorted.forEach((driver, i) => {
+    const hours = driverHoursMap[driver];
+    const pct = (hours / maxHours) * 100;
+    const driverType = DRIVER_TYPES[driver] || "";
+    html += `
+      <div class="ranking-row">
+        <div class="ranking-rank">${i+1}</div>
+        <div class="ranking-driver">${driver}${driverType ? " ("+driverType+")" : ""}</div>
+        <div class="ranking-hours">${hours}h</div>
+        <div class="ranking-bar">
+          <div class="ranking-bar-fill" style="width:${pct}%"></div>
+        </div>
+      </div>
+    `;
+  });
+  
+  table.innerHTML = html;
+}
+
+function buildContinuousTimeline(sessions, weekStart, weekEnd){
+  const clipped = sessions.map(s => {
+    const start = s.start < weekStart ? weekStart : s.start;
+    const end = s.end > weekEnd ? weekEnd : s.end;
+    return end > start ? {...s, start, end} : null;
+  }).filter(Boolean).sort((a,b) => a.start - b.start);
+  
+  if (clipped.length === 0){
+    return [{type:"inactive", start:weekStart, end:weekEnd}];
+  }
+  
+  const segments = [];
+  let cursor = weekStart;
+  
+  for (const session of clipped){
+    if (session.start > cursor){
+      segments.push({type:"inactive", start:cursor, end:session.start});
+    }
+    // Use session type if it exists (manual session), otherwise default to reading
+    const segType = session.type || "reading";
+    segments.push({type:segType, start:session.start, end:session.end, id:session.id, source:session.source});
+    cursor = session.end;
+  }
+  
+  if (cursor < weekEnd){
+    segments.push({type:"inactive", start:cursor, end:weekEnd});
+  }
+  
+  return segments;
+}
+
+function renderScreenshotSelector(drivers){
+  const dropdown = document.getElementById("screenshotSelectorDropdown");
+  dropdown.innerHTML = "";
+  
+  if (state.currentView === "table" && state.tableViewMode === "double"){
+    const leftOpt = document.createElement("div");
+    leftOpt.className = "screenshot-selector-option";
+    const leftChecked = state.selectedTablesForExport.has("left");
+    leftOpt.innerHTML = `
+      <input type="checkbox" id="tableLeft" ${leftChecked ? 'checked' : ''}>
+      <label for="tableLeft" style="cursor:pointer;flex:1;">Tableau gauche</label>
+    `;
+    leftOpt.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (state.selectedTablesForExport.has("left")){
+        state.selectedTablesForExport.delete("left");
+      } else {
+        state.selectedTablesForExport.add("left");
+      }
+      updateScreenshotSelectorText(drivers);
+      renderScreenshotSelector(drivers);
+    });
+    dropdown.appendChild(leftOpt);
+    
+    const rightOpt = document.createElement("div");
+    rightOpt.className = "screenshot-selector-option";
+    const rightChecked = state.selectedTablesForExport.has("right");
+    rightOpt.innerHTML = `
+      <input type="checkbox" id="tableRight" ${rightChecked ? 'checked' : ''}>
+      <label for="tableRight" style="cursor:pointer;flex:1;">Tableau droite</label>
+    `;
+    rightOpt.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (state.selectedTablesForExport.has("right")){
+        state.selectedTablesForExport.delete("right");
+      } else {
+        state.selectedTablesForExport.add("right");
+      }
+      updateScreenshotSelectorText(drivers);
+      renderScreenshotSelector(drivers);
+    });
+    dropdown.appendChild(rightOpt);
+    
+    updateScreenshotSelectorText(drivers);
+    return;
+  }
+  
+  const selectAllOpt = document.createElement("div");
+  selectAllOpt.className = "screenshot-selector-option select-all";
+  selectAllOpt.innerHTML = `
+    <input type="checkbox" id="selectAllDrivers" ${state.selectedDriversForScreenshot.size === drivers.length ? 'checked' : ''}>
+    <label for="selectAllDrivers" style="cursor:pointer;flex:1;">Tous les lecteurs (${drivers.length})</label>
+  `;
+  selectAllOpt.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const checkbox = selectAllOpt.querySelector("input");
+    if (checkbox.checked){
+      state.selectedDriversForScreenshot.clear();
+    } else {
+      drivers.forEach(d => state.selectedDriversForScreenshot.add(d));
+    }
+    updateScreenshotSelectorText(drivers);
+    renderScreenshotSelector(drivers);
+  });
+  dropdown.appendChild(selectAllOpt);
+  
+  drivers.forEach(driver => {
+    const opt = document.createElement("div");
+    opt.className = "screenshot-selector-option";
+    const isChecked = state.selectedDriversForScreenshot.has(driver) || state.selectedDriversForScreenshot.size === 0;
+    opt.innerHTML = `
+      <input type="checkbox" id="driver_${driver}" ${isChecked ? 'checked' : ''}>
+      <label for="driver_${driver}" style="cursor:pointer;flex:1;">${driver}</label>
+    `;
+    opt.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const checkbox = opt.querySelector("input");
+      if (checkbox.checked){
+        state.selectedDriversForScreenshot.delete(driver);
+      } else {
+        state.selectedDriversForScreenshot.add(driver);
+      }
+      updateScreenshotSelectorText(drivers);
+      renderScreenshotSelector(drivers);
+    });
+    dropdown.appendChild(opt);
+  });
+  
+  updateScreenshotSelectorText(drivers);
+}
+
+function updateScreenshotSelectorText(drivers){
+  const textEl = document.getElementById("screenshotSelectorText");
+  
+  if (state.currentView === "table" && state.tableViewMode === "double"){
+    const count = state.selectedTablesForExport.size;
+    if (count === 2) textEl.textContent = "Les 2 tableaux";
+    else if (count === 1) textEl.textContent = state.selectedTablesForExport.has("left") ? "Tableau gauche" : "Tableau droite";
+    else textEl.textContent = "Aucun sélectionné";
+    return;
+  }
+  
+  const count = state.selectedDriversForScreenshot.size;
+  if (count === 0 || count === drivers.length){
+    textEl.textContent = "Tous les lecteurs";
+  } else {
+    textEl.textContent = `${count} lecteur(s) sélectionné(s)`;
+  }
+}
+
+document.getElementById("screenshotSelectorBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  document.getElementById("screenshotSelectorDropdown").classList.toggle("open");
+});
+
+document.addEventListener("click", () => {
+  document.getElementById("screenshotSelectorDropdown").classList.remove("open");
+});
+
+// ============================================================
+// EDIT MODAL
+// ============================================================
+function openEditModal(driver){
+  state.editingDriver = driver;
+  state.editingDeletedIds = new Set();
+  
+  // Build working copy of sessions
+  const importedSessions = (state.lastResult?.sessionsByDriver?.[driver] || [])
+    .filter(s => s.source === "import")
+    .map(s => ({
+      id: s.id,
+      start: new Date(s.start),
+      end: new Date(s.end),
+      type: "reading",
+      source: "import",
+      editing: false
+    }));
+  
+  const manualSessions = (state.manualSessions[driver] || []).map(s => ({
+    id: s.id,
+    start: new Date(s.start),
+    end: new Date(s.end),
+    type: s.type || "reading",
+    source: "manual",
+    editing: false
+  }));
+  
+  state.editingSessions = [...importedSessions, ...manualSessions].sort((a,b) => a.start - b.start);
+  
+  const driverType = DRIVER_TYPES[driver] || "";
+  document.getElementById("editModalTitle").innerHTML = `Éditeur de sessions — <strong>${driver}</strong>${driverType ? " ("+driverType+")" : ""}`;
+  
+  renderEditSessionList();
+  document.getElementById("editModal").classList.add("open");
+}
+
+function closeEditModal(){
+  document.getElementById("editModal").classList.remove("open");
+  state.editingDriver = null;
+  state.editingSessions = [];
+  state.editingDeletedIds = new Set();
+}
+
+function renderEditSessionList(){
+  const list = document.getElementById("editSessionList");
+  list.innerHTML = "";
+  
+  // Filter out deleted
+  const visibleSessions = state.editingSessions.filter(s => !state.editingDeletedIds.has(s.id));
+  
+  if (visibleSessions.length === 0){
+    list.innerHTML = '<div class="session-empty">Aucune session pour ce lecteur.<br>Cliquez sur "Ajouter une session" pour commencer.</div>';
+    return;
+  }
+  
+  visibleSessions.forEach((session, index) => {
+    const item = document.createElement("div");
+    item.className = "session-item" + (session.source === "manual" ? " manual" : "");
+    
+    const badgeClass = session.type || "reading";
+    const badgeLabel = session.type === "reading" ? "📖 Lecture" : session.type === "transcription" ? "📝 Transcription" : session.type === "broken" ? "⚠️ En panne" : "⏸ Inactif";
+    
+    const isManual = session.source === "manual";
+    const isDeleted = state.editingDeletedIds.has(session.id);
+    
+    item.innerHTML = `
+      <div class="session-item-header">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span class="session-item-badge ${badgeClass}">${badgeLabel}</span>
+          ${isManual ? '<span class="session-item-badge manual-badge">✏️ Manuel</span>' : '<span class="session-item-badge" style="background:rgba(59,130,246,.1); color:#60a5fa; font-size:10px;">📁 Importé</span>'}
+        </div>
+        <div class="session-item-actions">
+          <button class="session-item-btn" data-action="edit" data-idx="${state.editingSessions.indexOf(session)}">✏️ Éditer</button>
+          ${isManual ? `<button class="session-item-btn delete" data-action="delete" data-idx="${state.editingSessions.indexOf(session)}">🗑️ Supprimer</button>` : `<button class="session-item-btn delete" data-action="mask" data-idx="${state.editingSessions.indexOf(session)}">${isDeleted ? "↩️ Restaurer" : "🚫 Ignorer"}</button>`}
+        </div>
+      </div>
+      <div class="session-item-fields">
+        <div class="session-field">
+          <label>Début</label>
+          <input type="datetime-local" value="${toDateTimeLocal(session.start)}" data-field="start" data-idx="${state.editingSessions.indexOf(session)}" ${!session.editing ? "disabled" : ""}>
+        </div>
+        <div class="session-field">
+          <label>Fin</label>
+          <input type="datetime-local" value="${toDateTimeLocal(session.end)}" data-field="end" data-idx="${state.editingSessions.indexOf(session)}" ${!session.editing ? "disabled" : ""}>
+        </div>
+        <div class="session-field">
+          <label>Type</label>
+          <select data-field="type" data-idx="${state.editingSessions.indexOf(session)}" ${!session.editing || !isManual ? "disabled" : ""}>
+            <option value="reading" ${session.type==="reading"?"selected":""}>Lecture</option>
+            <option value="transcription" ${session.type==="transcription"?"selected":""}>Transcription</option>
+            <option value="broken" ${session.type==="broken"?"selected":""}>En panne</option>
+            <option value="inactive" ${session.type==="inactive"?"selected":""}>Inactif</option>
+          </select>
+        </div>
+        <div class="session-field">
+          <label>Durée</label>
+          <input type="text" value="${roundUpHours((session.end - session.start) / 3600000)}h" disabled>
+        </div>
+      </div>
+    `;
+    
+    list.appendChild(item);
+  });
+  
+  // Attach event listeners
+  list.querySelectorAll("[data-action='edit']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.idx);
+      state.editingSessions[idx].editing = !state.editingSessions[idx].editing;
+      renderEditSessionList();
+    });
+  });
+  
+  list.querySelectorAll("[data-action='delete']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.idx);
+      const session = state.editingSessions[idx];
+      state.editingSessions = state.editingSessions.filter((_, i) => i !== idx);
+      renderEditSessionList();
+    });
+  });
+  
+  list.querySelectorAll("[data-action='mask']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.idx);
+      const session = state.editingSessions[idx];
+      if (state.editingDeletedIds.has(session.id)){
+        state.editingDeletedIds.delete(session.id);
+      } else {
+        state.editingDeletedIds.add(session.id);
+      }
+      renderEditSessionList();
+    });
+  });
+  
+  list.querySelectorAll("input[data-field], select[data-field]").forEach(input => {
+    input.addEventListener("change", (e) => {
+      const idx = parseInt(e.target.dataset.idx);
+      const field = e.target.dataset.field;
+      const value = e.target.value;
+      
+      if (field === "start" || field === "end"){
+        state.editingSessions[idx][field] = new Date(value);
+      } else if (field === "type"){
+        state.editingSessions[idx][field] = value;
+      }
+      
+      // Update duration display
+      const durationInput = input.closest(".session-item").querySelectorAll("input[disabled]")[0];
+      if (durationInput){
+        const hours = roundUpHours((state.editingSessions[idx].end - state.editingSessions[idx].start) / 3600000);
+        durationInput.value = hours + "h";
+      }
+    });
+  });
+}
+
+function addNewSession(){
+  // Default to week start + current time context
+  const defaultStart = new Date(state.targetWeek);
+  defaultStart.setHours(8, 0, 0, 0);
+  const defaultEnd = new Date(defaultStart);
+  defaultEnd.setHours(16, 0, 0, 0);
+  
+  state.editingSessions.push({
+    id: "manual_new_" + (nextSessionId++),
+    start: defaultStart,
+    end: defaultEnd,
+    type: "reading",
+    source: "manual",
+    editing: true
+  });
+  
+  state.editingSessions.sort((a,b) => a.start - b.start);
+  renderEditSessionList();
+}
+
+function saveEditModal(){
+  if (!state.editingDriver) return;
+  
+  const driver = state.editingDriver;
+  
+  // Save manual sessions
+  const manualSessions = state.editingSessions
+    .filter(s => s.source === "manual")
+    .map(s => ({
+      id: s.id,
+      start: s.start.toISOString(),
+      end: s.end.toISOString(),
+      type: s.type || "reading"
+    }));
+  
+  if (manualSessions.length > 0){
+    state.manualSessions[driver] = manualSessions;
+  } else {
+    delete state.manualSessions[driver];
+  }
+  
+  // Handle masked imported sessions: we need to store a "deleted" list
+  // We'll use a separate store for masked imported sessions
+  const maskedIds = Array.from(state.editingDeletedIds);
+  if (maskedIds.length > 0){
+    state.maskedImportedSessions = state.maskedImportedSessions || {};
+    state.maskedImportedSessions[driver] = maskedIds;
+  } else if (state.maskedImportedSessions) {
+    delete state.maskedImportedSessions[driver];
+  }
+  
+  saveManualSessions();
+  if (state.maskedImportedSessions) {
+    localStorage.setItem("maskedImportedSessions", JSON.stringify(state.maskedImportedSessions));
+  } else {
+    localStorage.removeItem("maskedImportedSessions");
+  }
+  
+  log(`💾 Sessions modifiées pour ${driver}: ${manualSessions.length} manuelle(s), ${maskedIds.length} importée(s) masquée(s)`);
+  
+  closeEditModal();
+  recompute();
+}
+
+// Initialize masked imported sessions from localStorage
+try {
+  const saved = localStorage.getItem("maskedImportedSessions");
+  if (saved) state.maskedImportedSessions = JSON.parse(saved);
+  else state.maskedImportedSessions = {};
+} catch(e) {
+  state.maskedImportedSessions = {};
+}
+
+// Modal event listeners
+document.getElementById("editModalClose").addEventListener("click", closeEditModal);
+document.getElementById("editCancel").addEventListener("click", closeEditModal);
+document.getElementById("editAddSession").addEventListener("click", addNewSession);
+document.getElementById("editSave").addEventListener("click", saveEditModal);
+
+// Close modal on overlay click
+document.getElementById("editModal").addEventListener("click", (e) => {
+  if (e.target.id === "editModal") closeEditModal();
+});
+
+// Close modal on Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.getElementById("editModal").classList.contains("open")){
+    closeEditModal();
+  }
+});
+
+function renderDriverCards(sessionsByDriver, drivers, weekStart, weekEnd, driverHoursMap, hasFiles){
+  const grid = document.getElementById("driversGrid");
+  grid.innerHTML = "";
+  grid.className = "drivers-grid" + (state.displayMode === "double" ? " two-columns" : "");
+  
+  if (drivers.length === 0){
+    grid.innerHTML = hasFiles
+      ? '<div class="preview-empty">Aucun fichier valide sélectionné</div>'
+      : '<div class="preview-empty">Importez des fichiers pour afficher l\'aperçu</div>';
+    return;
+  }
+
+  const weekDates = [];
+  for (let i=0; i<DAY_LABELS.length; i++){
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    weekDates.push(d);
+  }
+
+  drivers.forEach(driver => {
+    const sessions = sessionsByDriver[driver] || [];
+    const totalHours = driverHoursMap[driver];
+    const segments = buildContinuousTimeline(sessions, weekStart, weekEnd);
+    const driverType = DRIVER_TYPES[driver] || "";
+    
+    const card = document.createElement("div");
+    card.className = "driver-card" + (totalHours === 0 ? " zero-week" : "");
+    card.dataset.driver = driver;
+    
+    let datesHtml = weekDates.map(d => `<div class="date-cell">${fmtFrDateShort(d)}</div>`).join("");
+    let daysHtml = DAY_LABELS.map(d => `<div class="day-cell">${d}</div>`).join("");
+    
+    card.innerHTML = `
+      <div class="driver-header">
+        <div class="driver-name">Lecteur ${driver}${driverType ? " ("+driverType+")" : ""}</div>
+        <div class="driver-header-actions">
+          <button class="btn small edit" data-edit-driver="${driver}" type="button">✏️ Éditer</button>
+        </div>
+        <div class="driver-stats">
+          <div class="driver-stat">
+            <div class="driver-stat-label">Sessions</div>
+            <div class="driver-stat-value">${sessions.length}</div>
+          </div>
+          <div class="driver-stat">
+            <div class="driver-stat-label">Total</div>
+            <div class="driver-stat-value hours">${totalHours}h</div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-container">
+        <div class="timeline-header">
+          <div class="timeline-dates-row">${datesHtml}</div>
+          <div class="timeline-days-row">${daysHtml}</div>
+        </div>
+        <div class="timeline-track-wrapper">
+          <div class="timeline-track" data-driver="${driver}">
+            ${DAY_LABELS.slice(1).map((_, i) => 
+              `<div class="timeline-day-divider" style="left:${((i+1)/DAY_LABELS.length)*100}%"></div>`
+            ).join("")}
+          </div>
+        </div>
+      </div>
+      <div class="sessions-details ${state.showDetails ? '' : 'hidden'}">
+        <div class="sessions-details-title">
+          <span>📋 Sessions (${sessions.length})</span>
+          <button class="btn small edit" data-edit-driver="${driver}" type="button">✏️ Modifier</button>
+        </div>
+        <table class="sessions-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Début</th>
+              <th>Fin</th>
+              <th>Durée</th>
+            </tr>
+          </thead>
+          <tbody class="sessions-tbody"></tbody>
+        </table>
+      </div>
+    `;
+    
+    grid.appendChild(card);
+    
+    const track = card.querySelector(".timeline-track");
+    
+    segments.forEach(seg => {
+      const startHours = (seg.start - weekStart) / 3600000;
+      const endHours = (seg.end - weekStart) / 3600000;
+      const leftPct = (startHours / WEEK_HOURS) * 100;
+      const widthPct = Math.max(((endHours - startHours) / WEEK_HOURS) * 100, 0.5);
+      const hours = roundUpHours((seg.end - seg.start) / 3600000);
+      
+      let segClass = "timeline-segment ";
+      if (seg.type === "reading") segClass += "segment-reading";
+      else if (seg.type === "transcription") segClass += "segment-transcription";
+      else if (seg.type === "broken") segClass += "segment-broken";
+      else segClass += "segment-inactive" + (widthPct > 98 ? " full" : "");
+      
+      const el = document.createElement("div");
+      el.className = segClass;
+      el.style.left = leftPct + "%";
+      el.style.width = widthPct + "%";
+      
+      if (seg.type === "reading") el.textContent = hours + "h";
+      else if (seg.type === "transcription") el.textContent = hours + "h";
+      else if (seg.type === "broken") el.textContent = widthPct > 98 ? "EN PANNE" : hours + "h";
+      else el.textContent = widthPct > 98 ? "INACTIF" : hours + "h";
+      
+      el.addEventListener("mouseenter", e => showTooltip(e, seg.type, driver, seg.start, seg.end, hours));
+      el.addEventListener("mousemove", e => showTooltip(e, seg.type, driver, seg.start, seg.end, hours));
+      el.addEventListener("mouseleave", hideTooltip);
+      
+      track.appendChild(el);
+    });
+    
+    const tbody = card.querySelector(".sessions-tbody");
+    
+    // Show all sessions (both imported and manual) sorted by start time
+    const allSessions = sessions.map(s => {
+      const clippedStart = s.start < weekStart ? weekStart : s.start;
+      const clippedEnd = s.end > weekEnd ? weekEnd : s.end;
+      return clippedEnd > clippedStart ? {...s, clippedStart, clippedEnd} : null;
+    }).filter(Boolean).sort((a,b) => a.clippedStart - b.clippedStart);
+    
+    allSessions.forEach(session => {
+      const hours = roundUpHours((session.clippedEnd - session.clippedStart) / 3600000);
+      const sessionType = session.type || "reading";
+      
+      const tr = document.createElement("tr");
+      tr.className = "reading-row" + (session.source === "manual" ? " manual-row" : "");
+      
+      const typeLabel = sessionType === "reading" ? "Lecture" : sessionType === "transcription" ? "Transcription" : sessionType === "broken" ? "En panne" : "Inactif";
+      
+      tr.innerHTML = `
+        <td><span class="type-badge ${sessionType}">${typeLabel}</span></td>
+        <td class="time-cell">${fmtDateTime(session.clippedStart)}</td>
+        <td class="time-cell">${fmtDateTime(session.clippedEnd)}</td>
+        <td class="duration-cell">${hours}h</td>
+      `;
+      
+      tbody.appendChild(tr);
+    });
+    
+    // Total inactive
+    const inactiveSegments = segments.filter(s => s.type === "inactive");
+    const totalInactiveHours = inactiveSegments.reduce((sum, seg) => sum + (seg.end - seg.start) / 3600000, 0);
+    
+    const inactiveTr = document.createElement("tr");
+    inactiveTr.className = "inactive-total-row";
+    inactiveTr.innerHTML = `
+      <td><span class="type-badge inactive">Inactif</span></td>
+      <td class="time-cell" colspan="2"><strong>Total inactif</strong></td>
+      <td class="duration-cell">${roundUpHours(totalInactiveHours)}h</td>
+    `;
+    tbody.appendChild(inactiveTr);
+  });
+  
+  // Attach edit button listeners
+  grid.querySelectorAll("[data-edit-driver]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openEditModal(btn.dataset.editDriver);
+    });
+  });
+}
+
+function renderTableView(sessionsByDriver, drivers, weekStart, driverHoursMap){
+  const content = document.getElementById("tableViewContent");
+  content.innerHTML = "";
+  
+  if (drivers.length === 0){
+    content.innerHTML = '<div class="preview-empty">Importez des fichiers pour afficher l\'aperçu</div>';
+    return;
+  }
+  
+  const weekEnd = computeWeekEnd(weekStart);
+  const weekDates = [];
+  for (let i=0; i<DAY_LABELS.length; i++){
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    weekDates.push(d);
+  }
+  
+  if (state.tableViewMode === "single"){
+    const tableHtml = buildV2Table(drivers, sessionsByDriver, driverHoursMap, weekDates, weekStart);
+    content.innerHTML = tableHtml;
+  } else if (state.tableViewMode === "double") {
+    const halfIndex = Math.ceil(drivers.length / 2);
+    const leftDrivers = drivers.slice(0, halfIndex);
+    const rightDrivers = drivers.slice(halfIndex);
+    
+    content.innerHTML = `
+      <div class="tables-side-by-side">
+        <div class="table-half" data-table="left">
+          ${buildV2Table(leftDrivers, sessionsByDriver, driverHoursMap, weekDates, weekStart, "Lecteurs (groupe 1)")}
+        </div>
+        <div class="table-half" data-table="right">
+          ${buildV2Table(rightDrivers, sessionsByDriver, driverHoursMap, weekDates, weekStart, "Lecteurs (groupe 2)")}
+        </div>
+      </div>
+    `;
+  } else if (state.tableViewMode === "combined") {
+    const tableHtml = buildV2Table(drivers, sessionsByDriver, driverHoursMap, weekDates, weekStart, "État des Lecteurs - Vue combinée", true);
+    content.innerHTML = tableHtml;
+  }
+  
+  // Attach edit button listeners in table view
+  content.querySelectorAll("[data-edit-driver]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openEditModal(btn.dataset.editDriver);
+    });
+  });
+}
+
+function buildV2Table(drivers, sessionsByDriver, driverHoursMap, weekDates, weekStart, customTitle, isCombined = false){
+  const title = customTitle || "État des Lecteurs";
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 4);
+  const weekRangeStr = fmtWeekRange(weekStart, weekEnd);
+  
+  const containerClass = "table-view-container" + (isCombined ? " combined-width" : "");
+  
+  let html = `
+    <div class="${containerClass}">
+      <div class="table-view-header">
+        <div class="table-view-title">${title}</div>
+        <div class="table-view-week">Semaine du ${weekRangeStr}</div>
+      </div>
+      <div class="table-view-wrapper">
+        <table class="v2-table">
+          <thead>
+            <tr>
+              <th>Lecteur</th>
+              ${DAY_LABELS.map((day, i) => `
+                <th>
+                  ${day}
+                  <span class="date">${fmtFrDateShort(weekDates[i])}</span>
+                </th>
+              `).join("")}
+              <th>Éditer</th>
+            </tr>
+          </thead>
+          <tbody>
+  `;
+  
+  drivers.forEach(driver => {
+    const sessions = sessionsByDriver[driver] || [];
+    const driverType = DRIVER_TYPES[driver] || "";
+    const hasManual = (state.manualSessions[driver] || []).length > 0;
+    
+    html += `<tr><td>Lecteur ${driver}${driverType ? " ("+driverType+")" : ""}${hasManual ? " ✏️" : ""}</td>`;
+    
+    weekDates.forEach((date, dayIndex) => {
+      const dayStart = new Date(date);
+      dayStart.setHours(0,0,0,0);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23,59,59,999);
+      
+      const dayHours = sessions.reduce((sum, s) => {
+        const sStart = s.start < dayStart ? dayStart : s.start;
+        const sEnd = s.end > dayEnd ? dayEnd : s.end;
+        if (sEnd > sStart) return sum + (sEnd - sStart) / 3600000;
+        return sum;
+      }, 0);
+      
+      const roundedDayHours = roundUpHours(dayHours);
+      
+      let cellClass = "inactive";
+      let cellText = "—";
+      let barWidth = "100%";
+      
+      if (roundedDayHours > 0) {
+        cellClass = "busy";
+        
+        if (state.cellFillMode === "proportional") {
+          const pct = Math.min((roundedDayHours / HOURS_PER_DAY) * 100, 100);
+          barWidth = pct + "%";
+        } else {
+          barWidth = "90%";
+        }
+        
+        cellText = state.showCellHours ? roundedDayHours + "h" : "";
+      }
+      
+      html += `<td>
+        <div class="v2-cell ${cellClass}">
+          <div class="v2-cell-bar" style="width:${barWidth}"></div>
+          <span class="v2-cell-text">${cellText}</span>
+        </div>
+      </td>`;
+    });
+    
+    html += `<td class="edit-cell"><button class="btn small edit" data-edit-driver="${driver}" type="button" style="padding:4px 8px; font-size:11px;">✏️</button></td>`;
+    html += `</tr>`;
+  });
+  
+  html += `
+          </tbody>
+        </table>
+      </div>
+      <div class="v2-legend">
+        <div class="v2-legend-item">
+          <span class="v2-legend-swatch" style="background:var(--state-lecture)"></span>
+          <span>Lecture</span>
+        </div>
+        <div class="v2-legend-item">
+          <span class="v2-legend-swatch" style="background:var(--state-transcription)"></span>
+          <span>Transcription</span>
+        </div>
+        <div class="v2-legend-item">
+          <span class="v2-legend-swatch" style="background:var(--state-inactive)"></span>
+          <span>Inactif</span>
+        </div>
+        <div class="v2-legend-item">
+          <span class="v2-legend-swatch" style="background:var(--state-broken)"></span>
+          <span>En panne</span>
+        </div>
+        <div class="v2-legend-item" style="font-size:10px; opacity:.7;">
+          <span>✏️</span>
+          <span>Sessions modifiées manuellement</span>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  return html;
+}
+
+function updateDefaultFilename(){
+  const input = document.getElementById("outName");
+  if (input.dataset.userEdited === "1") return;
+  let root = "Rapport";
+  const withPath = state.files.find(f => f.path && f.path.includes("/"));
+  if (withPath) root = withPath.path.split("/")[0];
+  input.value = root + "_" + dateKey(state.targetWeek) + "_Synthese_Hebdomadaire.xlsx";
+}
+
+document.getElementById("outName").addEventListener("input", e=>{
+  e.target.dataset.userEdited = "1";
+});
+
+async function buildOutputWorkbook(weeklyTables, drivers, targetWeekStart, sessionsByDriver){
+  const wb = new ExcelJS.Workbook();
+  
+  const ws = wb.addWorksheet(OUTPUT_SHEET_NAME);
+  const dataBarRanges = [];
+  const nGridRows = Math.ceil(drivers.length / DRIVERS_PER_ROW);
+  const gridRowStart = {};
+  let rowCursor = 1;
+  
+  for (let g=0; g<nGridRows; g++){
+    gridRowStart[g] = rowCursor;
+    rowCursor += BLOCK_ROWS + GROUP_GAP_ROWS;
+  }
+
+  drivers.forEach((driver, i)=>{
+    const hoursList = weeklyTables[driver];
+    const gridRow = Math.floor(i / DRIVERS_PER_ROW);
+    const gridCol = i % DRIVERS_PER_ROW;
+    const startRow = gridRowStart[gridRow];
+    const startCol = 1 + gridCol * (COLS_PER_BLOCK + BLOCK_GAP_COLS);
+    const dayRow = startRow, dateRow = startRow+1, dataRow = startRow+2;
+
+    const corner = ws.getCell(dayRow, startCol);
+    corner.font = {bold:true, size:12};
+    corner.fill = {type:"pattern", pattern:"solid", fgColor:{argb:HEADER_FILL_ARGB}};
+
+    DAY_LABELS.forEach((label, di)=>{
+      const c = ws.getCell(dayRow, startCol+1+di);
+      c.value = label;
+      c.font = {bold:true};
+      c.alignment = {horizontal:"center", vertical:"center"};
+      c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:HEADER_FILL_ARGB}};
+    });
+
+    const dateLabel = ws.getCell(dateRow, startCol);
+    dateLabel.value = "Date";
+    dateLabel.font = {bold:true};
+    dateLabel.alignment = {horizontal:"center", vertical:"center"};
+    dateLabel.fill = {type:"pattern", pattern:"solid", fgColor:{argb:HEADER_FILL_ARGB}};
+
+    DAY_LABELS.forEach((_, di)=>{
+      const dt = new Date(targetWeekStart); 
+      dt.setDate(dt.getDate()+di);
+      const c = ws.getCell(dateRow, startCol+1+di);
+      c.value = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate()));
+      c.numFmt = "d-mmm";
+      c.font = {bold:true};
+      c.alignment = {horizontal:"center", vertical:"center"};
+      c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:HEADER_FILL_ARGB}};
+    });
+
+    const driverLabel = ws.getCell(dataRow, startCol);
+    driverLabel.value = "Lecteur " + driver;
+    driverLabel.font = {bold:true};
+    driverLabel.alignment = {horizontal:"center", vertical:"center"};
+    driverLabel.fill = {type:"pattern", pattern:"solid", fgColor:{argb:HEADER_FILL_ARGB}};
+
+    const roundedHours = hoursList.map(roundUpHours);
+    roundedHours.forEach((hours, di)=>{
+      const c = ws.getCell(dataRow, startCol+1+di);
+      c.value = hours;
+      c.numFmt = "0";
+      c.alignment = {horizontal:"center", vertical:"center"};
+      if (hours === 0){
+        c.fill = {type:"pattern", pattern:"solid", fgColor:{argb:ZERO_FILL_ARGB}};
+      }
+    });
+
+    const ref = colLetter(startCol+1)+dataRow+":"+colLetter(startCol+DAY_LABELS.length)+dataRow;
+    dataBarRanges.push(ref);
+
+    ws.getColumn(startCol).width = 20;
+    for (let di=0; di<DAY_LABELS.length; di++){
+      ws.getColumn(startCol+1+di).width = 8;
+    }
+  });
+
+  const buffer1 = await wb.xlsx.writeBuffer();
+  const patched1 = await injectDataBars(buffer1, dataBarRanges);
+  
+  const wb2 = new ExcelJS.Workbook();
+  await wb2.xlsx.load(patched1);
+  
+  const ws2 = wb2.addWorksheet("Tableau État");
+  
+  const BLUE_FILL = {type:"pattern", pattern:"solid", fgColor:{argb:"FF93C5FD"}};
+  const GRAY_FILL = {type:"pattern", pattern:"solid", fgColor:{argb:"FFE5E7EB"}};
+  const ORANGE_FILL = {type:"pattern", pattern:"solid", fgColor:{argb:"FFFB923C"}};
+  const HEADER_FILL = {type:"pattern", pattern:"solid", fgColor:{argb:"FF1F2937"}};
+  
+  const weekDates = [];
+  for (let i=0; i<DAY_LABELS.length; i++){
+    const d = new Date(targetWeekStart);
+    d.setDate(d.getDate() + i);
+    weekDates.push(d);
+  }
+  
+  const headerRow = ws2.getRow(1);
+  const headerCell1 = headerRow.getCell(1);
+  headerCell1.value = "Date";
+  headerCell1.font = {bold:true, size:11, color:{argb:"FFFFFFFF"}};
+  headerCell1.fill = HEADER_FILL;
+  headerCell1.alignment = {horizontal:"center", vertical:"center"};
+  headerCell1.border = {
+    top:{style:"thin", color:{argb:"FF374151"}},
+    bottom:{style:"thin", color:{argb:"FF374151"}},
+    left:{style:"thin", color:{argb:"FF374151"}},
+    right:{style:"thin", color:{argb:"FF374151"}},
+  };
+  
+  for (let i=0; i<DAY_LABELS.length; i++){
+    const cell = headerRow.getCell(2 + i);
+    cell.value = fmtExcelTableDate(weekDates[i]);
+    cell.font = {bold:true, size:11, color:{argb:"FFFFFFFF"}};
+    cell.fill = HEADER_FILL;
+    cell.alignment = {horizontal:"center", vertical:"center"};
+    cell.border = {
+      top:{style:"thin", color:{argb:"FF374151"}},
+      bottom:{style:"thin", color:{argb:"FF374151"}},
+      left:{style:"thin", color:{argb:"FF374151"}},
+      right:{style:"thin", color:{argb:"FF374151"}},
+    };
+  }
+  
+  drivers.forEach((driver, driverIdx) => {
+    const rowNum = driverIdx + 2;
+    const sessions = sessionsByDriver[driver] || [];
+    const row = ws2.getRow(rowNum);
+    const driverType = DRIVER_TYPES[driver] || "";
+    
+    const labelCell = row.getCell(1);
+    labelCell.value = "Lecteur " + driver + (driverType ? " (" + driverType + ")" : "");
+    labelCell.font = {bold:true, size:11};
+    labelCell.alignment = {horizontal:"left", vertical:"center"};
+    labelCell.border = {
+      top:{style:"thin", color:{argb:"FFE5E7EB"}},
+      bottom:{style:"thin", color:{argb:"FFE5E7EB"}},
+      left:{style:"thin", color:{argb:"FFE5E7EB"}},
+      right:{style:"thin", color:{argb:"FFE5E7EB"}},
+    };
+    
+    for (let dayIdx=0; dayIdx<DAY_LABELS.length; dayIdx++){
+      const date = weekDates[dayIdx];
+      const dayStart = new Date(date);
+      dayStart.setHours(0,0,0,0);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23,59,59,999);
+      
+      const dayHours = sessions.reduce((sum, s) => {
+        const sStart = s.start < dayStart ? dayStart : s.start;
+        const sEnd = s.end > dayEnd ? dayEnd : s.end;
+        if (sEnd > sStart) return sum + (sEnd - sStart) / 3600000;
+        return sum;
+      }, 0);
+      
+      const roundedDayHours = roundUpHours(dayHours);
+      const cell = row.getCell(2 + dayIdx);
+      
+      cell.value = roundedDayHours > 0 ? 1 : 0;
+      cell.font = {bold:true, size:11, color:{argb:"FFFFFFFF"}};
+      cell.alignment = {horizontal:"center", vertical:"center"};
+      
+      if (roundedDayHours > 0) {
+        cell.fill = BLUE_FILL;
+      } else {
+        cell.fill = GRAY_FILL;
+      }
+      
+      cell.border = {
+        top:{style:"thin", color:{argb:"FFE5E7EB"}},
+        bottom:{style:"thin", color:{argb:"FFE5E7EB"}},
+        left:{style:"thin", color:{argb:"FFE5E7EB"}},
+        right:{style:"thin", color:{argb:"FFE5E7EB"}},
+      };
+    }
+  });
+  
+  ws2.getColumn(1).width = 18;
+  for (let i=0; i<DAY_LABELS.length; i++){
+    ws2.getColumn(2 + i).width = 12;
+  }
+  
+  for (let r=1; r<=drivers.length+1; r++){
+    ws2.getRow(r).height = 22;
+  }
+  
+  return await wb2.xlsx.writeBuffer();
+}
+
+async function injectDataBars(buffer, ranges){
+  const zip = await JSZip.loadAsync(buffer);
+  const file = zip.file("xl/worksheets/sheet1.xml");
+  if (!file || ranges.length === 0) return buffer;
+  let xml = await file.async("string");
+  let cfXml = "";
+  ranges.forEach((ref, idx)=>{
+    cfXml += '<conditionalFormatting sqref="'+ref+'"><cfRule type="dataBar" priority="'+(idx+1)+'"><dataBar><cfvo type="num" val="'+MIN_HOUR_SCALE+'"/><cfvo type="num" val="'+MAX_HOUR_SCALE+'"/><color rgb="'+DATABAR_ARGB+'"/></dataBar></cfRule></conditionalFormatting>';
+  });
+  xml = xml.replace("</sheetData>", "</sheetData>" + cfXml);
+  zip.file("xl/worksheets/sheet1.xml", xml);
+  return zip.generateAsync({type:"blob"});
+}
+
+document.getElementById("btnGenerate").addEventListener("click", async ()=>{
+  const btn = document.getElementById("btnGenerate");
+  const statusEl = document.getElementById("exportStatus");
+  if (!state.lastResult || state.lastResult.activeFileCount === 0) return;
+
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span> Génération…';
+  statusEl.innerHTML = '<span class="dot"></span> Construction du classeur…';
+
+  try{
+    const {weeklyTables, drivers, sessionsByDriver} = state.lastResult;
+    let outName = document.getElementById("outName").value.trim() || "Synthese_Hebdomadaire.xlsx";
+    if (!/\.xlsx$/i.test(outName)) outName += ".xlsx";
+
+    const buffer = await buildOutputWorkbook(weeklyTables, drivers, state.targetWeek, sessionsByDriver);
+    const blob = new Blob([buffer], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = outName;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+
+    statusEl.className = "export-status success";
+    statusEl.innerHTML = '<span class="dot"></span> "'+outName+'" généré avec succès (2 feuilles)';
+    log('Rapport généré: "'+outName+'" (2 feuilles)');
+  }catch(e){
+    statusEl.className = "export-status error";
+    statusEl.innerHTML = '<span class="dot"></span> Erreur: '+e.message;
+    log("Erreur de génération: "+e.message, "err");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
+
+document.getElementById("btnExportExcel").addEventListener("click", async ()=>{
+  document.getElementById("btnGenerate").click();
+});
+
+async function captureElement(element, backgroundColor){
+  const rect = element.getBoundingClientRect();
+  const canvas = await html2canvas(element, {
+    backgroundColor: backgroundColor,
+    scale: 2,
+    useCORS: true,
+    width: rect.width,
+    height: rect.height,
+    x: 0,
+    y: 0,
+    scrollX: 0,
+    scrollY: 0,
+    windowWidth: rect.width,
+    windowHeight: rect.height,
+    removeContainer: true
+  });
+  return canvas;
+}
+
+document.getElementById("btnScreenshot").addEventListener("click", async ()=>{
+  const btn = document.getElementById("btnScreenshot");
+  const statusEl = document.getElementById("screenshotStatus");
+  
+  if (!state.lastResult || state.lastResult.activeFileCount === 0) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Capture…';
+
+  try{
+    let targetElement;
+    let allCards;
+    
+    if (state.currentView === "timeline"){
+      const grid = document.getElementById("driversGrid");
+      const allDrivers = state.lastResult.drivers;
+      const selectedDrivers = state.selectedDriversForScreenshot.size === 0 || state.selectedDriversForScreenshot.size === allDrivers.length
+        ? allDrivers
+        : allDrivers.filter(d => state.selectedDriversForScreenshot.has(d));
+      
+      allCards = grid.querySelectorAll(".driver-card");
+      allCards.forEach(card => {
+        const driver = card.dataset.driver;
+        if (!selectedDrivers.includes(driver)) card.style.display = "none";
+      });
+      targetElement = grid;
+    } else {
+      const content = document.getElementById("tableViewContent");
+      if (state.tableViewMode === "single" || state.tableViewMode === "combined"){
+        targetElement = content.querySelector(".table-view-container");
+      } else if (state.tableViewMode === "double") {
+        const halves = content.querySelectorAll(".table-half");
+        halves.forEach(half => {
+          const tableSide = half.dataset.table;
+          if (!state.selectedTablesForExport.has(tableSide)) half.style.display = "none";
+        });
+        const visibleHalves = content.querySelectorAll(".table-half:not([style*='display: none'])");
+        if (visibleHalves.length === 2) targetElement = content.querySelector(".tables-side-by-side");
+        else if (visibleHalves.length === 1) targetElement = visibleHalves[0].querySelector(".table-view-container");
+        else throw new Error("Aucun tableau sélectionné");
+      }
+    }
+
+    await new Promise(r => requestAnimationFrame(r));
+
+    const bg = getComputedStyle(document.documentElement).getPropertyValue("--void").trim();
+    const canvas = await captureElement(targetElement, bg);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+    if (!blob) throw new Error("échec");
+
+    const fileName = "Apercu_" + dateKey(state.targetWeek) + ".png";
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = fileName;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+
+    statusEl.style.color = "var(--green)";
+    statusEl.textContent = '✓ "'+fileName+'" enregistré';
+
+    if (state.currentView === "timeline" && allCards) allCards.forEach(card => card.style.display = "");
+    else if (state.currentView === "table" && state.tableViewMode === "double"){
+      content.querySelectorAll(".table-half").forEach(half => half.style.display = "");
+    }
+  }catch(e){
+    statusEl.style.color = "var(--red)";
+    statusEl.textContent = "Échec de la capture: " + e.message;
+    if (state.currentView === "timeline"){
+      document.querySelectorAll(".driver-card").forEach(card => card.style.display = "");
+    }
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "📷 PNG";
+  }
+});
+
+document.getElementById("btnExportPDF").addEventListener("click", async ()=>{
+  const btn = document.getElementById("btnExportPDF");
+  const statusEl = document.getElementById("screenshotStatus");
+  if (!state.lastResult || state.lastResult.activeFileCount === 0) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> PDF…';
+
+  try{
+    let targetElement;
+    let allCards;
+    
+    if (state.currentView === "timeline"){
+      const grid = document.getElementById("driversGrid");
+      const allDrivers = state.lastResult.drivers;
+      const selectedDrivers = state.selectedDriversForScreenshot.size === 0 || state.selectedDriversForScreenshot.size === allDrivers.length
+        ? allDrivers
+        : allDrivers.filter(d => state.selectedDriversForScreenshot.has(d));
+      allCards = grid.querySelectorAll(".driver-card");
+      allCards.forEach(card => {
+        if (!selectedDrivers.includes(card.dataset.driver)) card.style.display = "none";
+      });
+      targetElement = grid;
+    } else {
+      const content = document.getElementById("tableViewContent");
+      if (state.tableViewMode === "single" || state.tableViewMode === "combined"){
+        targetElement = content.querySelector(".table-view-container");
+      } else {
+        const halves = content.querySelectorAll(".table-half");
+        halves.forEach(half => {
+          if (!state.selectedTablesForExport.has(half.dataset.table)) half.style.display = "none";
+        });
+        const visibleHalves = content.querySelectorAll(".table-half:not([style*='display: none'])");
+        if (visibleHalves.length === 2) targetElement = content.querySelector(".tables-side-by-side");
+        else if (visibleHalves.length === 1) targetElement = visibleHalves[0].querySelector(".table-view-container");
+        else throw new Error("Aucun tableau sélectionné");
+      }
+    }
+
+    await new Promise(r => requestAnimationFrame(r));
+    const bg = getComputedStyle(document.documentElement).getPropertyValue("--void").trim();
+    const canvas = await captureElement(targetElement, bg);
+    const imgData = canvas.toDataURL("image/png");
+    
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: canvas.width > canvas.height ? "landscape" : "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height]
+    });
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    
+    const fileName = "Rapport_" + dateKey(state.targetWeek) + ".pdf";
+    pdf.save(fileName);
+
+    statusEl.style.color = "var(--green)";
+    statusEl.textContent = '✓ "'+fileName+'" enregistré';
+
+    if (state.currentView === "timeline" && allCards) allCards.forEach(card => card.style.display = "");
+    else if (state.currentView === "table" && state.tableViewMode === "double"){
+      document.querySelectorAll(".table-half").forEach(half => half.style.display = "");
+    }
+  }catch(e){
+    statusEl.style.color = "var(--red)";
+    statusEl.textContent = "Échec PDF: " + e.message;
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "📄 PDF";
+  }
+});
+
+document.getElementById("btnExportHTML").addEventListener("click", async ()=>{
+  const btn = document.getElementById("btnExportHTML");
+  const statusEl = document.getElementById("screenshotStatus");
+  if (!state.lastResult || state.lastResult.activeFileCount === 0) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> HTML…';
+
+  try{
+    const targetElement = state.currentView === "timeline" 
+      ? document.getElementById("driversGrid") 
+      : document.getElementById("tableViewContent");
+    
+    await new Promise(r => requestAnimationFrame(r));
+    const bg = getComputedStyle(document.documentElement).getPropertyValue("--void").trim();
+    const canvas = await captureElement(targetElement, bg);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+    if (!blob) throw new Error("échec");
+
+    const fileName = "Rapport_" + dateKey(state.targetWeek) + ".html";
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = fileName;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+
+    statusEl.style.color = "var(--green)";
+    statusEl.textContent = '✓ "'+fileName+'" enregistré';
+  }catch(e){
+    statusEl.style.color = "var(--red)";
+    statusEl.textContent = "Échec HTML: " + e.message;
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "🌐 HTML";
+  }
+});
+
+document.getElementById("logToggle").addEventListener("click", ()=>{
+  document.getElementById("logToggle").classList.toggle("open");
+  document.getElementById("logBody").classList.toggle("open");
+});
+
+function tickClock(){
+  const now = new Date();
+  const p = n => String(n).padStart(2,"0");
+  document.getElementById("clockTime").textContent = p(now.getHours())+":"+p(now.getMinutes())+":"+p(now.getSeconds());
+  const dayNames = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+  document.getElementById("clockDate").textContent = dayNames[now.getDay()] + " " + now.getDate() + " " + FR_MONTHS_LONG[now.getMonth()] + " " + now.getFullYear();
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+// ============================================================
+// WATCH FOLDER
+// ============================================================
+function isFileSystemAccessSupported(){
+  return "showDirectoryPicker" in window;
+}
+
+async function recursivelyWalkDirectory(dirHandle, basePath = ""){
+  const files = [];
+  try{
+    for await (const entry of dirHandle.values()){
+      const entryPath = basePath ? basePath + "/" + entry.name : entry.name;
+      if (entry.kind === "file"){
+        if (/\.xlsx$/i.test(entry.name) && !shouldSkipFilename(entry.name)){
+          try{
+            const file = await entry.getFile();
+            Object.defineProperty(file, "webkitRelativePath", {value: entryPath});
+            files.push(file);
+          }catch(e){}
+        }
+      } else if (entry.kind === "directory"){
+        const subFiles = await recursivelyWalkDirectory(entry, entryPath);
+        files.push(...subFiles);
+      }
+    }
+  }catch(e){}
+  return files;
+}
+
+async function scanWatchFolder(){
+  if (!state.watchFolderHandle) return;
+  
+  const statusEl = document.getElementById("watchStatus");
+  statusEl.className = "watch-status scanning";
+  statusEl.textContent = "Scan en cours…";
+  
+  try{
+    const perm = await state.watchFolderHandle.queryPermission({mode: "read"});
+    if (perm !== "granted"){
+      const reqPerm = await state.watchFolderHandle.requestPermission({mode: "read"});
+      if (reqPerm !== "granted"){
+        log("Permission refusée pour le dossier surveillé", "err");
+        stopWatching();
+        return;
+      }
+    }
+    
+    const files = await recursivelyWalkDirectory(state.watchFolderHandle);
+    
+    if (files.length === 0){
+      statusEl.className = "watch-status idle";
+      statusEl.textContent = "Aucun fichier trouvé";
+      scheduleNextScan();
+      return;
+    }
+    
+    const newSnapshot = new Map();
+    const changedFiles = [];
+    const newFiles = [];
+    
+    for (const file of files){
+      const path = file.webkitRelativePath;
+      const key = path + "|" + file.size;
+      const lastMod = file.lastModified;
+      newSnapshot.set(key, lastMod);
+      
+      const alreadyLoaded = state.files.find(f => f.path === path);
+      if (!alreadyLoaded){
+        newFiles.push(file);
+      } else if (state.lastFileSnapshot.has(key)){
+        const prevLastMod = state.lastFileSnapshot.get(key);
+        if (lastMod > prevLastMod) changedFiles.push(file);
+      } else {
+        newFiles.push(file);
+      }
+    }
+    
+    state.lastFileSnapshot = newSnapshot;
+    
+    const currentPaths = new Set(files.map(f => f.webkitRelativePath));
+    const removed = state.files.filter(f => !currentPaths.has(f.path));
+    
+    if (removed.length > 0){
+      state.files = state.files.filter(f => currentPaths.has(f.path));
+      log(`🗑️ ${removed.length} fichier(s) supprimé(s) du dossier`, "warn");
+      renderManifest();
+      recompute();
+    }
+    
+    if (newFiles.length > 0){
+      log(`📂 ${newFiles.length} nouveau(x) fichier(s) détecté(s)`);
+      await ingestFiles(newFiles);
+    }
+    
+    if (changedFiles.length > 0 && !state.processing){
+      log(`🔄 ${changedFiles.length} fichier(s) modifié(s), rechargement…`);
+      for (const cf of changedFiles){
+        state.files = state.files.filter(f => f.path !== cf.webkitRelativePath);
+      }
+      renderManifest();
+      await ingestFiles(changedFiles);
+    }
+    
+    const now = new Date();
+    const timeStr = String(now.getHours()).padStart(2,"0") + ":" + 
+                    String(now.getMinutes()).padStart(2,"0") + ":" +
+                    String(now.getSeconds()).padStart(2,"0");
+    statusEl.className = "watch-status idle";
+    statusEl.textContent = (newFiles.length + changedFiles.length + removed.length > 0)
+      ? "Mis à jour à " + timeStr
+      : "Dernière vérif. : " + timeStr;
+    
+  }catch(e){
+    log("Erreur lors du scan automatique: " + e.message, "err");
+    statusEl.className = "watch-status idle";
+    statusEl.textContent = "Erreur: " + e.message;
+  }
+  
+  if (state.watchActive) scheduleNextScan();
+}
+
+function scheduleNextScan(){
+  if (state.watchTimerId) clearTimeout(state.watchTimerId);
+  const intervalMs = state.watchInterval * 1000;
+  state.watchNextScanTime = Date.now() + intervalMs;
+  updateNextScanDisplay();
+  if (state.watchCountdownId) clearInterval(state.watchCountdownId);
+  state.watchCountdownId = setInterval(updateNextScanDisplay, 1000);
+  state.watchTimerId = setTimeout(()=>{
+    if (state.watchActive && !state.processing) scanWatchFolder();
+    else scheduleNextScan();
+  }, intervalMs);
+}
+
+function updateNextScanDisplay(){
+  const nextEl = document.getElementById("watchNext");
+  if (!state.watchNextScanTime || !state.watchActive){
+    nextEl.textContent = "";
+    return;
+  }
+  const remaining = Math.max(0, state.watchNextScanTime - Date.now());
+  const seconds = Math.floor(remaining / 1000);
+  nextEl.textContent = seconds >= 60
+    ? "Prochain scan: " + Math.floor(seconds/60) + "m " + (seconds%60) + "s"
+    : "Prochain scan: " + seconds + "s";
+}
+
+function startWatching(){
+  if (!state.watchFolderHandle) return;
+  state.watchActive = true;
+  document.getElementById("watchSection").classList.add("active");
+  document.getElementById("btnStopWatch").style.display = "inline-flex";
+  document.getElementById("btnScanNow").style.display = "inline-flex";
+  document.getElementById("btnSelectWatchFolder").textContent = "📁 Changer de dossier";
+  log("▶️ Surveillance automatique démarrée (intervalle: " + state.watchInterval + "s)");
+  scanWatchFolder();
+}
+
+function stopWatching(){
+  state.watchActive = false;
+  if (state.watchTimerId){ clearTimeout(state.watchTimerId); state.watchTimerId = null; }
+  if (state.watchCountdownId){ clearInterval(state.watchCountdownId); state.watchCountdownId = null; }
+  state.watchNextScanTime = null;
+  document.getElementById("watchNext").textContent = "";
+  document.getElementById("watchSection").classList.remove("active");
+  document.getElementById("btnStopWatch").style.display = "none";
+  document.getElementById("btnScanNow").style.display = "none";
+  document.getElementById("btnSelectWatchFolder").textContent = state.watchFolderHandle ? "📁 Changer de dossier" : "📁 Choisir un dossier";
+  const statusEl = document.getElementById("watchStatus");
+  statusEl.className = "watch-status idle";
+  statusEl.textContent = "Surveillance arrêtée";
+  log("⏹️ Surveillance automatique arrêtée");
+}
+
+async function selectWatchFolder(){
+  if (!isFileSystemAccessSupported()){
+    document.getElementById("watchNotSupported").style.display = "block";
+    return;
+  }
+  try{
+    const handle = await window.showDirectoryPicker({mode: "read"});
+    state.watchFolderHandle = handle;
+    await saveFolderHandle(handle);
+    document.getElementById("watchFolderDisplay").textContent = handle.name;
+    document.getElementById("watchFolderDisplay").classList.remove("empty");
+    document.getElementById("watchNotSupported").style.display = "none";
+    log("📁 Dossier surveillé: " + handle.name);
+    startWatching();
+  }catch(e){
+    if (e.name !== "AbortError") log("Erreur sélection dossier: " + e.message, "err");
+  }
+}
+
+async function restoreWatchFolder(){
+  const handle = await loadFolderHandle();
+  if (!handle) return;
+  try{
+    let perm = await handle.queryPermission({mode: "read"});
+    if (perm !== "granted") perm = await handle.requestPermission({mode: "read"});
+    if (perm === "granted"){
+      state.watchFolderHandle = handle;
+      document.getElementById("watchFolderDisplay").textContent = handle.name;
+      document.getElementById("watchFolderDisplay").classList.remove("empty");
+      log("📁 Dossier précédent restauré: " + handle.name);
+      startWatching();
+    } else {
+      await clearFolderHandle();
+    }
+  }catch(e){
+    await clearFolderHandle();
+  }
+}
+
+document.getElementById("btnSelectWatchFolder").addEventListener("click", selectWatchFolder);
+document.getElementById("btnStopWatch").addEventListener("click", async () => {
+  stopWatching();
+  state.watchFolderHandle = null;
+  await clearFolderHandle();
+  document.getElementById("watchFolderDisplay").textContent = "Aucun dossier surveillé";
+  document.getElementById("watchFolderDisplay").classList.add("empty");
+  document.getElementById("btnSelectWatchFolder").textContent = "📁 Choisir un dossier";
+  const statusEl = document.getElementById("watchStatus");
+  statusEl.className = "watch-status idle";
+  statusEl.textContent = "Inactif";
+});
+document.getElementById("btnScanNow").addEventListener("click", () => {
+  if (state.watchFolderHandle && !state.processing){
+    if (state.watchTimerId) clearTimeout(state.watchTimerId);
+    scanWatchFolder();
+  }
+});
+document.getElementById("watchInterval").addEventListener("change", (e) => {
+  const newInterval = parseInt(e.target.value, 10);
+  state.watchInterval = newInterval;
+  localStorage.setItem("watchInterval", String(newInterval));
+  if (state.watchActive){
+    log("⏱️ Intervalle changé: " + newInterval + " secondes");
+    if (state.watchTimerId) clearTimeout(state.watchTimerId);
+    scheduleNextScan();
+  }
+});
+
+if (!isFileSystemAccessSupported()){
+  document.getElementById("watchNotSupported").style.display = "block";
+  document.getElementById("btnSelectWatchFolder").disabled = true;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+applyTheme(state.theme);
+
+const savedInterval = parseInt(localStorage.getItem("watchInterval") || "30", 10);
+state.watchInterval = savedInterval;
+document.getElementById("watchInterval").value = String(savedInterval);
+
+document.getElementById("toggleCellHours").classList.toggle("active", state.showCellHours);
+document.getElementById("cellFillMode").value = state.cellFillMode;
+
+renderWeek();
+renderManifest();
+recompute();
+log("Application prête. Importez des fichiers .xlsx pour commencer.");
+log("💡 Astuce: Cliquez sur ✏️ Éditer sur n'importe quel lecteur pour modifier ses sessions manuellement.");
+
+setTimeout(restoreWatchFolder, 500);
+
+})();
+</script>
+</body>
+</html>
