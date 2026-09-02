@@ -403,11 +403,18 @@
 
             <!-- MODULE 5 (Fullscreen & Auto-Connect) -->
             <section id="ws-5" class="view">
-                <button class="floating-back-btn" onclick="showView('dashboard')">
-                    <i class="fas fa-arrow-left"></i> Back to Hub
-                </button>
-                <!-- Auto-connects to port 5001 immediately -->
-                <iframe src="http://localhost:5001" class="app-fullscreen"></iframe>
+                <div class="workspace-header">
+                    <div>
+                        <h1 class="page-title">📊 Monthly Reports</h1>
+                        <p class="page-subtitle">Situation Package E&P — Sonatrach DDS</p>
+                    </div>
+                    <button class="back-btn" onclick="showView('dashboard')">
+                        <i class="fas fa-arrow-left"></i> Back to Hub
+                    </button>
+                </div>
+                <link rel="stylesheet" href="{{ url_for('static', filename='reports_style.css') }}">
+                <div id="reports-app"></div>
+                <script src="{{ url_for('static', filename='reports_app.js') }}"></script>
             </section>
         </main>
     </div>
